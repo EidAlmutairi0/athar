@@ -1,12 +1,17 @@
+import 'package:athar/screens/Login-Screen.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import 'package:athar/screens/TourGuide_Screens/tourguide_home_screen.dart';
+import 'package:athar/screens/User_Screens/user_home_screen.dart';
 
-class Authentication {
+class Authentication with ChangeNotifier {
   static String currntUserEmail;
   static String currntUsername;
+  int istureGuide;
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   var dataBase = FirebaseFirestore.instance;
 
@@ -17,6 +22,26 @@ class Authentication {
       print(e.code);
       print(e.message);
     }
+  }
+
+  bool isAuth() {
+    if (currntUserEmail != null) return true;
+    return false;
+  }
+
+  bool userType() {
+    if (istureGuide == 0) return true;
+    return false;
+  }
+
+  Future<String> autoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (prefs.containsKey("email") == false) {
+      return null;
+    }
+    currntUserEmail = prefs.getString('email');
+    istureGuide = prefs.getInt('UserType');
+    return currntUserEmail;
   }
 
   Future<String> signUp(String email, String password, String userName,
@@ -46,7 +71,7 @@ class Authentication {
       } else {
         await _firebaseAuth
             .createUserWithEmailAndPassword(email: email, password: password)
-            .then((value) {
+            .then((value) async {
           if (isTourGuide) {
             dataBase
                 .collection("users")
@@ -60,6 +85,10 @@ class Authentication {
               'isTourGuide': true,
             });
             mess = "tourGuide signed up";
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString('email', _firebaseAuth.currentUser.email);
+            prefs.setInt("userType", 0);
+            notifyListeners();
             return mess;
           } else {
             dataBase
@@ -74,6 +103,10 @@ class Authentication {
               'isTourGuide': false,
             });
             mess = "user signed up";
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString('email', _firebaseAuth.currentUser.email);
+            prefs.setInt("userType", 1);
+            notifyListeners();
             return mess;
           }
         });
@@ -101,10 +134,15 @@ class Authentication {
       if (!checkuser) {
         await _firebaseAuth
             .signInWithEmailAndPassword(email: email, password: password)
-            .then((value) {
+            .then((value) async {
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('email', _firebaseAuth.currentUser.email);
+          prefs.setInt("userType", 0);
+          notifyListeners();
           Navigator.pushNamedAndRemoveUntil(
               context, "UserHomeScreen", (r) => false);
         });
+
         return "Logged in";
       }
       return "not user";
@@ -128,7 +166,12 @@ class Authentication {
       if (!checkuser) {
         await _firebaseAuth
             .signInWithEmailAndPassword(email: email, password: password)
-            .then((value) {
+            .then((value) async {
+          final prefs = await SharedPreferences.getInstance();
+          prefs.setString('email', _firebaseAuth.currentUser.email);
+          prefs.setInt("userType", 0);
+          notifyListeners();
+
           Navigator.pushNamedAndRemoveUntil(
               context, "TourGuideHomeScreen", (r) => false);
         });
@@ -138,5 +181,14 @@ class Authentication {
     } catch (e) {
       return e.message;
     }
+  }
+
+  void signOut(context) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    _firebaseAuth.signOut().then((value) {
+      Navigator.pushReplacementNamed(context, "LoginScreen");
+      prefs.clear();
+    });
   }
 }

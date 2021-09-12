@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'screens/splashScreen.dart';
 import 'screens/Login-Screen.dart';
 import 'screens/SignUp-Screen.dart';
 import 'providers/auth.dart';
@@ -14,16 +15,25 @@ void main() async {
   runApp(MyApp());
 }
 
+// ignore: non_constant_identifier_names
+
 class MyApp extends StatefulWidget {
+  // ignore: missing_return
+
   // This widget is the root of your application.
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
+  final test = Authentication();
+  var userType;
+  @override
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return ChangeNotifierProvider(
+      create: (context) => Authentication(),
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
         routes: {
           'LoginScreen': (ctx) => LoginScreen(),
@@ -34,6 +44,8 @@ class _MyAppState extends State<MyApp> {
         theme: ThemeData(
           primaryColor: Color(0xFFF2945E),
         ),
-        home: Center(child: LoginScreen()));
+        home: SplashScreen(),
+      ),
+    );
   }
 }
