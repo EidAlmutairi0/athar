@@ -15,12 +15,21 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     test.autoLogin().whenComplete(() async {
       Timer(
-          Duration(milliseconds: 1500),
+          Duration(milliseconds: 2000),
           () => {
                 // ignore: unrelated_type_equality_checks
                 if (test.isAuth())
                   {
-                    Navigator.pushReplacementNamed(context, "UserHomeScreen"),
+                    if (test.userType())
+                      {
+                        Navigator.pushReplacementNamed(
+                            context, "TourGuideHomeScreen"),
+                      }
+                    else
+                      {
+                        Navigator.pushReplacementNamed(
+                            context, "UserHomeScreen"),
+                      }
                   }
                 else
                   {

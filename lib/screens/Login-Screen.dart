@@ -358,6 +358,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                     setState(() {
                                       Navigator.pushNamedAndRemoveUntil(context,
                                           "TourGuideHomeScreen", (r) => false);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(SnackBar(
+                                        duration: Duration(milliseconds: 700),
+                                        backgroundColor: Colors.green,
+                                        content: Text('Logged in successfully'),
+                                      ));
                                     });
                                   } else {
                                     ScaffoldMessenger.of(context)

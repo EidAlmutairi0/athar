@@ -40,7 +40,7 @@ class Authentication with ChangeNotifier {
       return null;
     }
     currntUserEmail = prefs.getString('email');
-    istureGuide = prefs.getInt('UserType');
+    istureGuide = prefs.getInt('userType');
     return currntUserEmail;
   }
 
