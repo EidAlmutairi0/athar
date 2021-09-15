@@ -137,7 +137,7 @@ class Authentication with ChangeNotifier {
             .then((value) async {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('email', _firebaseAuth.currentUser.email);
-          prefs.setInt("userType", 0);
+          prefs.setInt("userType", 1);
           notifyListeners();
           Navigator.pushNamedAndRemoveUntil(
               context, "UserHomeScreen", (r) => false);
