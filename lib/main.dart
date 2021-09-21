@@ -6,8 +6,8 @@ import 'screens/Login-Screen.dart';
 import 'screens/SignUp-Screen.dart';
 import 'providers/auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:athar/screens/TourGuide_Screens/tourguide_home_screen.dart';
-import 'package:athar/screens/User_Screens/user_home_screen.dart';
+import 'package:athar/screens/TourGuide_Screens/TourGuide-Main-Screen.dart';
+import 'screens/User_Screens/User-Main-Screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,8 +38,8 @@ class _MyAppState extends State<MyApp> {
         routes: {
           'LoginScreen': (ctx) => LoginScreen(),
           'SignUpScreen': (ctx) => SignUpScreen(),
-          'TourGuideHomeScreen': (ctx) => TourGuideHomeScreen(),
-          'UserHomeScreen': (ctx) => UserHomeScreen()
+          'TourGuideHomeScreen': (ctx) => TourGuideMainScreen(),
+          'UserHomeScreen': (ctx) => UserMainScreen()
         },
         theme: ThemeData(
           primaryColor: Color(0xFFF2945E),

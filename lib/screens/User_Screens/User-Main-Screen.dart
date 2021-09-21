@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import '/providers/auth.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
+import 'User-Home-Screen.dart';
+import 'User-Map-Screen.dart';
+import 'User-Profile-Screen.dart';
 
-class TourGuideHomeScreen extends StatelessWidget {
+class UserMainScreen extends StatefulWidget {
+  @override
+  State<UserMainScreen> createState() => _UserMainScreenState();
+}
+
+class _UserMainScreenState extends State<UserMainScreen> {
   final auth = Authentication();
+  int selectedScreen = 1;
+  final _Screens = [UserProfileScreen(), UserHomeScreen(), UserMapScreen()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.logout),
-          onPressed: () {
-            auth.signOut(context);
-          },
-        ),
-        title: Text("TourGuide"),
-        centerTitle: true,
-        backgroundColor: Color(0xFFF2945E),
-      ),
       bottomNavigationBar: ConvexAppBar(
         backgroundColor: Color(0xFFF2945E),
         style: TabStyle.reactCircle,
@@ -28,9 +27,13 @@ class TourGuideHomeScreen extends StatelessWidget {
           TabItem(icon: Icons.map),
         ],
         initialActiveIndex: 1,
-        onTap: (int i) => print('click index=$i'),
+        onTap: (int i) {
+          setState(() {
+            selectedScreen = i;
+          });
+        },
       ),
-      body: Container(),
+      body: _Screens[selectedScreen],
     );
   }
 }

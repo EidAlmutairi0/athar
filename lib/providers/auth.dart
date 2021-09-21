@@ -5,12 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'package:athar/screens/TourGuide_Screens/tourguide_home_screen.dart';
-import 'package:athar/screens/User_Screens/user_home_screen.dart';
 
 class Authentication with ChangeNotifier {
   static String currntUserEmail;
   static String currntUsername;
+  static bool TourGuide;
   int istureGuide;
   FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   var dataBase = FirebaseFirestore.instance;
@@ -41,6 +40,9 @@ class Authentication with ChangeNotifier {
     }
     currntUserEmail = prefs.getString('email');
     istureGuide = prefs.getInt('userType');
+    if (istureGuide == 0) TourGuide = true;
+    if (istureGuide == 1) TourGuide = false;
+    currntUsername = prefs.getString('userName');
     return currntUserEmail;
   }
 
@@ -87,6 +89,10 @@ class Authentication with ChangeNotifier {
             mess = "tourGuide signed up";
             final prefs = await SharedPreferences.getInstance();
             prefs.setString('email', _firebaseAuth.currentUser.email);
+            prefs.setString('userName', currntUsername);
+            currntUsername = userName;
+            currntUserEmail = email;
+            TourGuide = true;
             prefs.setInt("userType", 0);
             notifyListeners();
             return mess;
@@ -105,6 +111,10 @@ class Authentication with ChangeNotifier {
             mess = "user signed up";
             final prefs = await SharedPreferences.getInstance();
             prefs.setString('email', _firebaseAuth.currentUser.email);
+            prefs.setString('userName', currntUsername);
+            currntUsername = userName;
+            currntUserEmail = email;
+            TourGuide = false;
             prefs.setInt("userType", 1);
             notifyListeners();
             return mess;
@@ -138,6 +148,13 @@ class Authentication with ChangeNotifier {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('email', _firebaseAuth.currentUser.email);
           prefs.setInt("userType", 1);
+          dataBase
+              .collection("users")
+              .doc('normalUsers')
+              .collection("normalUsers")
+              .where('email', isEqualTo: _firebaseAuth.currentUser.email)
+              .get()
+              .then((value) => {currntUsername = value.docs.first.id});
           notifyListeners();
           Navigator.pushNamedAndRemoveUntil(
               context, "UserHomeScreen", (r) => false);
@@ -170,6 +187,13 @@ class Authentication with ChangeNotifier {
           final prefs = await SharedPreferences.getInstance();
           prefs.setString('email', _firebaseAuth.currentUser.email);
           prefs.setInt("userType", 0);
+          dataBase
+              .collection("users")
+              .doc('tourGuides')
+              .collection("tourGuides")
+              .where('email', isEqualTo: _firebaseAuth.currentUser.email)
+              .get()
+              .then((value) => {currntUsername = value.docs.first.id});
           notifyListeners();
 
           Navigator.pushNamedAndRemoveUntil(

@@ -282,8 +282,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       showCircularProgressIndicator
                           ? Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFFF2945E),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Color(0xFFF2945E),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                                width: 280,
+                                height: 50,
+                                child: Center(
+                                    child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                )),
                               ),
                             )
                           : new Container(
@@ -292,7 +301,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: RaisedButton(
                                 color: Color(0xFFF2945E),
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15)),
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
                                 onPressed: () async {
                                   if (_formKey.currentState.validate()) {
                                     showCircularProgressIndicator = true;
@@ -342,8 +352,26 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       showCircularProgressIndicator2
                           ? Center(
-                              child: CircularProgressIndicator(
-                                color: Color(0xFFF2945E),
+                              child: Container(
+                                width: 280,
+                                height: 50,
+                                child: OutlinedButton(
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all(
+                                        RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(15.0))),
+                                  ),
+                                  child: Container(
+                                    width: 280,
+                                    height: 50,
+                                    child: Center(
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFFF2945E),
+                                      ),
+                                    ),
+                                  ),
+                                ),
                               ),
                             )
                           : new Container(
