@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class Search extends SearchDelegate<String> {
@@ -68,28 +69,44 @@ class Search extends SearchDelegate<String> {
   @override
   Widget buildSuggestions(BuildContext context) {
     // TODO: implement buildSuggestions
-    final suggestionList = query.isEmpty
-        ? recentlist
-        : statelist.where((element) => element.startsWith(query)).toList();
-    return ListView.builder(
-      itemBuilder: (context, index) => ListTile(
-          onTap: () {
-            showResults(context);
-          },
-          title: RichText(
-            text: TextSpan(
-                text: suggestionList[index].substring(0, query.length),
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-                children: [
-                  TextSpan(
-                      text: suggestionList[index].substring(query.length),
-                      style: TextStyle(color: Colors.grey))
-                ]),
-          )),
-      itemCount: suggestionList.length,
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('places')
+          .where('searchName', isGreaterThanOrEqualTo: query.toLowerCase())
+          .snapshots(),
+      builder: (context, snapshot) {
+        return (snapshot.connectionState == ConnectionState.waiting)
+            ? Center(child: CircularProgressIndicator())
+            : ListView.builder(
+                itemCount: snapshot.data.docs.length,
+                itemBuilder: (context, index) {
+                  DocumentSnapshot data = snapshot.data.docs[index];
+                  return Card(
+                    child: Row(
+                      children: <Widget>[
+                        Image.network(
+                          data['images'][0],
+                          width: 150,
+                          height: 100,
+                          fit: BoxFit.fill,
+                        ),
+                        SizedBox(
+                          width: 25,
+                        ),
+                        Text(
+                          data['name'],
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+      },
     );
   }
 }
