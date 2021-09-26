@@ -71,10 +71,12 @@ class Search extends SearchDelegate<String> {
     // TODO: implement buildSuggestions
 
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('places')
-          .where('searchName', isGreaterThanOrEqualTo: query.toLowerCase())
-          .snapshots(),
+      stream: (query != "" && query != null)
+          ? FirebaseFirestore.instance
+              .collection('places')
+              .where('searchKey', arrayContains: query.toLowerCase())
+              .snapshots()
+          : FirebaseFirestore.instance.collection("places").snapshots(),
       builder: (context, snapshot) {
         return (snapshot.connectionState == ConnectionState.waiting)
             ? Center(child: CircularProgressIndicator())

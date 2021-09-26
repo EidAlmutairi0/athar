@@ -31,7 +31,7 @@ class PlaceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 9,
-      margin: EdgeInsets.fromLTRB(0.0, 40, 0.0, 0),
+      margin: EdgeInsets.fromLTRB(0.0, 0, 0.0, 30),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
