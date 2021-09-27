@@ -8,7 +8,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:athar/screens/TourGuide_Screens/TourGuide-Main-Screen.dart';
 import 'screens/User_Screens/User-Main-Screen.dart';
 import 'package:geolocator/geolocator.dart';
-import 'Widgets/PlaceCard.dart';
 import 'globals.dart' as globals;
 
 void main() async {

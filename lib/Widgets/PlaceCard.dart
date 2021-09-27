@@ -53,17 +53,18 @@ class PlaceCard extends StatelessWidget {
   }
 
   Widget build(BuildContext context) {
+    dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
+            placeLatitude, placeLongitude)) /
+        1000;
     return Card(
       elevation: 9,
       margin: EdgeInsets.fromLTRB(0.0, 0, 0.0, 30),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
-      child: FlatButton(
-        shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
-        padding: EdgeInsets.zero,
-        onPressed: () {},
+      child: InkWell(
+        borderRadius: BorderRadius.circular(15),
+        onTap: () {},
         child: Container(
           height: 230,
           width: 330,
