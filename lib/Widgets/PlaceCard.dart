@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:athar/main.dart';
+import '/globals.dart' as globals;
 
 class PlaceCard extends StatelessWidget {
-  static double latitude = 5;
-  static double longitude = 5;
   var loc = Geolocator();
   // ignore: non_constant_identifier_names
   String PlaceName;
@@ -21,6 +19,7 @@ class PlaceCard extends StatelessWidget {
   Image VRimage;
   double placeLatitude;
   double placeLongitude;
+  double dis;
 
   @override
   PlaceCard(
@@ -48,12 +47,12 @@ class PlaceCard extends StatelessWidget {
     this.images = images;
     placeLatitude = latitude;
     placeLongitude = longitude;
-  }
-  double dis;
-  Widget build(BuildContext context) {
-    dis = (Geolocator.distanceBetween(
-            latitude, longitude, placeLatitude, placeLongitude)) /
+    dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
+            placeLatitude, placeLongitude)) /
         1000;
+  }
+
+  Widget build(BuildContext context) {
     return Card(
       elevation: 9,
       margin: EdgeInsets.fromLTRB(0.0, 0, 0.0, 30),
@@ -127,7 +126,7 @@ class PlaceCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "${dis.toStringAsFixed(2)}km",
+                          "${dis.toStringAsFixed(1)}km",
                           style: TextStyle(
                             color: Colors.black,
                             fontFamily: 'RocknRollOne',

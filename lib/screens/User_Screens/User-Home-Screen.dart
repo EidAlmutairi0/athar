@@ -127,7 +127,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               plac.get('longitude')),
                         );
                       }
-                      bool done = false;
+                      PlacesList.sort((a, b) => a.dis.compareTo(b.dis));
                       return Column(
                         children: PlacesList,
                       );

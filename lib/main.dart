@@ -9,6 +9,7 @@ import 'package:athar/screens/TourGuide_Screens/TourGuide-Main-Screen.dart';
 import 'screens/User_Screens/User-Main-Screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'Widgets/PlaceCard.dart';
+import 'globals.dart' as globals;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,17 +28,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Position _position;
   @override
   void initState() {
     _determinePosition().then((value) {
       if (value != null) {
         setState(() {
-          _position = value;
-          PlaceCard.latitude = value.latitude;
-          PlaceCard.longitude = value.longitude;
-          print(PlaceCard.latitude);
-          print(PlaceCard.longitude);
+          globals.latitude = value.latitude;
+          globals.longitude = value.longitude;
+          print(globals.latitude);
+          print(globals.longitude);
         });
       }
     });
