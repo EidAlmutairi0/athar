@@ -56,18 +56,21 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
                   final data = snapshot.data.docs;
                   List<PlaceCard> PlacesList = [];
                   for (var plac in data) {
-                    PlacesList.add(PlaceCard(
-                      plac.get('name'),
-                      plac.get('PlaceTotalRate'),
-                      plac.get('Location'),
-                      plac.get('aboutThePlace'),
-                      plac.get('openingHours'),
-                      plac.get('tekPrice'),
-                      plac.get('webSite'),
-                      plac.get('visiters'),
-                      plac.get('tourGuides'),
-                      plac.get("images"),
-                    ));
+                    PlacesList.add(
+                      PlaceCard(
+                          plac.get('name'),
+                          plac.get('PlaceTotalRate'),
+                          plac.get('Location'),
+                          plac.get('aboutThePlace'),
+                          plac.get('openingHours'),
+                          plac.get('tekPrice'),
+                          plac.get('webSite'),
+                          plac.get('visiters'),
+                          plac.get('tourGuides'),
+                          plac.get("images"),
+                          plac.get('latitude'),
+                          plac.get('longitude')),
+                    );
                   }
                   bool done = false;
                   return Column(

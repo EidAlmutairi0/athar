@@ -36,6 +36,8 @@ dependencies:
   convex_bottom_bar: ^3.0.0
   like_button: ^2.0.3
   firebase_storage: ^10.0.3
+  geolocator: ^7.6.2
+  location: ^4.3.0
 
 
 
