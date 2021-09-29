@@ -3,7 +3,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:line_icons/line_icons.dart';
 import '/globals.dart' as globals;
-import 'User-Place-Overview.dart';
 import '../Place-Reviews-Screen.dart';
 
 enum SelectedTab { Overview, Reviews }
