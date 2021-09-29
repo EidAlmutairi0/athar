@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
 import 'package:geolocator/geolocator.dart';
 import '/globals.dart' as globals;
+import 'package:athar/screens/User_Screens/User-Place-Screen.dart';
 
 class PlaceCard extends StatelessWidget {
   var loc = Geolocator();
@@ -64,7 +65,25 @@ class PlaceCard extends StatelessWidget {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
-        onTap: () {},
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => UserPlaceScreen(
+                      PlaceName,
+                      this.PlaceTotalRate,
+                      this.Location,
+                      this.aboutThePlace,
+                      this.openingHours,
+                      this.tekPrice,
+                      this.webSite,
+                      this.visiters,
+                      this.tourGuides,
+                      this.images,
+                      dis.toStringAsFixed(1),
+                    )),
+          );
+        },
         child: Container(
           height: 230,
           width: 330,
@@ -126,14 +145,16 @@ class PlaceCard extends StatelessWidget {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          "${dis.toStringAsFixed(1)}km",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontFamily: 'RocknRollOne',
-                            fontSize: 12,
-                          ),
-                        ),
+                        (globals.longitude == 5 && globals.latitude == 5)
+                            ? Container()
+                            : Text(
+                                "${dis.toStringAsFixed(1)}km",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: 'RocknRollOne',
+                                  fontSize: 12,
+                                ),
+                              ),
                         Row(
                           children: [
                             Text(
