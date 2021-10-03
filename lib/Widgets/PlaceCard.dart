@@ -3,6 +3,8 @@ import 'package:like_button/like_button.dart';
 import 'package:geolocator/geolocator.dart';
 import '/globals.dart' as globals;
 import 'package:athar/screens/User_Screens/User-Place-Screen.dart';
+import 'package:athar/screens/TourGuide_Screens/TourGuide-Place-Screen.dart';
+import 'package:athar/providers/auth.dart';
 
 class PlaceCard extends StatelessWidget {
   var loc = Geolocator();
@@ -14,8 +16,7 @@ class PlaceCard extends StatelessWidget {
   String openingHours;
   String tekPrice;
   String webSite;
-  List visiters;
-  List tourGuides;
+
   List images;
   Image VRimage;
   double placeLatitude;
@@ -23,19 +24,8 @@ class PlaceCard extends StatelessWidget {
   double dis;
 
   @override
-  PlaceCard(
-      name,
-      PlaceTotalRate,
-      Location,
-      aboutThePlace,
-      openingHours,
-      tekPrice,
-      webSite,
-      visiters,
-      tourGuides,
-      List images,
-      latitude,
-      longitude) {
+  PlaceCard(name, PlaceTotalRate, Location, aboutThePlace, openingHours,
+      tekPrice, webSite, List images, latitude, longitude) {
     PlaceName = name;
     this.PlaceTotalRate = PlaceTotalRate;
     this.Location = Location;
@@ -43,8 +33,7 @@ class PlaceCard extends StatelessWidget {
     this.openingHours = openingHours;
     this.tekPrice = tekPrice;
     this.webSite = webSite;
-    this.visiters = visiters;
-    this.tourGuides = tourGuides;
+
     this.images = images;
     placeLatitude = latitude;
     placeLongitude = longitude;
@@ -66,23 +55,42 @@ class PlaceCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => UserPlaceScreen(
-                      PlaceName,
-                      this.PlaceTotalRate,
-                      this.Location,
-                      this.aboutThePlace,
-                      this.openingHours,
-                      this.tekPrice,
-                      this.webSite,
-                      this.visiters,
-                      this.tourGuides,
-                      this.images,
-                      dis.toStringAsFixed(1),
-                    )),
-          );
+          globals.currentPlace = PlaceName;
+          print(globals.currentPlace);
+          if (Authentication.TourGuide)
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => TourguidePlaceScreen(
+                        PlaceName,
+                        this.PlaceTotalRate,
+                        this.Location,
+                        this.aboutThePlace,
+                        this.openingHours,
+                        this.tekPrice,
+                        this.webSite,
+                        this.images,
+                        placeLatitude,
+                        placeLongitude,
+                      )),
+            );
+          else
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => UserPlaceScreen(
+                        PlaceName,
+                        this.PlaceTotalRate,
+                        this.Location,
+                        this.aboutThePlace,
+                        this.openingHours,
+                        this.tekPrice,
+                        this.webSite,
+                        this.images,
+                        placeLatitude,
+                        placeLongitude,
+                      )),
+            );
         },
         child: Container(
           height: 230,

@@ -4,10 +4,17 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:line_icons/line_icons.dart';
 import '/globals.dart' as globals;
 import '../Place-Reviews-Screen.dart';
-
-enum SelectedTab { Overview, Reviews }
+import 'package:athar/Widgets/TourGuidCard.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:athar/screens/Tourguides-Screen.dart';
+import 'package:athar/screens/Visitors-Screen.dart';
+import 'package:athar/providers/auth.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_share/flutter_share.dart';
 
 class UserPlaceScreen extends StatefulWidget {
+  var loc = Geolocator();
+
   String PlaceName;
   double PlaceTotalRate;
   String Location;
@@ -15,10 +22,8 @@ class UserPlaceScreen extends StatefulWidget {
   String openingHours;
   String tekPrice;
   String webSite;
-  List visiters;
-  List tourGuides;
   List images;
-  String dis;
+  double dis;
 
   UserPlaceScreen(
     name,
@@ -28,10 +33,9 @@ class UserPlaceScreen extends StatefulWidget {
     openingHours,
     tekPrice,
     webSite,
-    visiters,
-    tourGuides,
     List images,
-    String dis,
+    placeLatitude,
+    placeLongitude,
   ) {
     PlaceName = name;
     this.PlaceTotalRate = PlaceTotalRate;
@@ -40,10 +44,10 @@ class UserPlaceScreen extends StatefulWidget {
     this.openingHours = openingHours;
     this.tekPrice = tekPrice;
     this.webSite = webSite;
-    this.visiters = visiters;
-    this.tourGuides = tourGuides;
     this.images = images;
-    this.dis = dis;
+    dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
+            placeLatitude, placeLongitude)) /
+        1000;
   }
 
   @override
@@ -55,6 +59,18 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
   TabController _controller;
   Image VRimage;
   @override
+  Future check;
+  Future chekSub() async {
+    check = chekSub();
+
+    return await FirebaseFirestore.instance
+        .collection('places')
+        .doc('${globals.currentPlace}')
+        .collection('Tour Guides')
+        .doc('${Authentication.currntUsername}')
+        .snapshots();
+  }
+
   void initState() {
     _controller = new TabController(length: 2, vsync: this);
 
@@ -77,7 +93,6 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
 
   @override
   Widget build(BuildContext context) {
-    SelectedTab currentTab = SelectedTab.Overview;
     return Scaffold(
       body: SafeArea(
         child: ListView(
@@ -144,7 +159,10 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                               child: IconButton(
                             color: Color(0xFFF2945E),
                             icon: Icon(Icons.share_rounded),
-                            onPressed: () {},
+                            onPressed: () {
+                              FlutterShare.shareFile(
+                                  title: 'test', filePath: 'test');
+                            },
                           )),
                         ),
                       ],
@@ -183,7 +201,7 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                               (globals.longitude == 5 && globals.latitude == 5)
                                   ? Container()
                                   : Text(
-                                      "${widget.dis}km",
+                                      "${widget.dis.toStringAsFixed(1)}km",
                                       style: TextStyle(
                                         color: Colors.black,
                                         fontFamily: 'RocknRollOne',
@@ -220,7 +238,9 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                     ),
                     Column(
                       children: [
-                        Divider(),
+                        Divider(
+                          color: Colors.black54,
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(25),
                           child: Container(
@@ -230,7 +250,9 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                             ),
                           ),
                         ),
-                        Divider(),
+                        Divider(
+                          color: Colors.black54,
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -256,7 +278,9 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                             ],
                           ),
                         ),
-                        Divider(),
+                        Divider(
+                          color: Colors.black54,
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -281,7 +305,9 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                             ],
                           ),
                         ),
-                        Divider(),
+                        Divider(
+                          color: Colors.black54,
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -325,7 +351,9 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                             ],
                           ),
                         ),
-                        Divider(),
+                        Divider(
+                          color: Colors.black54,
+                        ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
@@ -356,38 +384,13 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                             ],
                           ),
                         ),
-                        Divider(),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Container(
-                                child: Text(
-                                  'Visited By',
-                                  style: TextStyle(
-                                    fontFamily: 'RocknRollOne',
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Color(0xFFF2945E),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                  left: 100,
-                                ),
-                                // https://www.moc.gov.sa/
-                                child: Text('Visitors!'),
-                              ),
-                            ],
-                          ),
+                        Divider(
+                          color: Colors.black54,
                         ),
-                        Divider(),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Container(
                                 child: Text(
@@ -400,79 +403,292 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                   ),
                                 ),
                               ),
-                              Container(
-                                margin: const EdgeInsets.only(
-                                  left: 100,
+                              InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  child: Icon(
+                                    Icons.arrow_forward_ios_sharp,
+                                    color: Colors.grey,
+                                    size: 16,
+                                  ),
                                 ),
-                                // https://www.moc.gov.sa/
-                                child: Text('Visitors!'),
                               ),
                             ],
                           ),
                         ),
-                        Divider(),
-                        Container(
-                          alignment: Alignment.topLeft,
-                          margin: EdgeInsets.all(10),
-                          child: Text(
-                            'Tour Guides',
-                            style: TextStyle(
-                              fontFamily: 'RocknRollOne',
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Color(0xFFF2945E),
-                            ),
+                        Divider(
+                          color: Colors.black54,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                child: Text(
+                                  'Visited By',
+                                  style: TextStyle(
+                                    fontFamily: 'RocknRollOne',
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Color(0xFFF2945E),
+                                  ),
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              VisitorsScreen()));
+                                },
+                                child: Icon(
+                                  Icons.arrow_forward_ios_sharp,
+                                  color: Colors.grey,
+                                  size: 16,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        Row(
-                          children: [],
+                        Divider(
+                          color: Colors.black54,
                         ),
-                        Divider(),
+                        Container(
+                          height: 160,
+                          alignment: Alignment.topLeft,
+                          margin: EdgeInsets.all(10),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    'Tour Guides',
+                                    style: TextStyle(
+                                      fontFamily: 'RocknRollOne',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Color(0xFFF2945E),
+                                    ),
+                                  ),
+                                  InkWell(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  TourGuidesScreen()));
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'See All',
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios_sharp,
+                                          color: Colors.grey,
+                                          size: 16,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 18,
+                              ),
+                              StreamBuilder<QuerySnapshot>(
+                                stream: FirebaseFirestore.instance
+                                    .collection('places')
+                                    .doc('${globals.currentPlace}')
+                                    .collection('Tour Guides')
+                                    .snapshots(),
+                                builder: (context, snapshot) {
+                                  if (snapshot.hasError) {
+                                    return Center(
+                                      child: Text('Something went wrong'),
+                                    );
+                                    return Center(
+                                      child: Text('Something went wrong'),
+                                    );
+                                  }
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(top: 50),
+                                        child: CircularProgressIndicator(
+                                          color: Color(0xFFF2945E),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                  if (snapshot.requireData.docs.isEmpty) {
+                                    return Padding(
+                                      padding: const EdgeInsets.only(top: 50),
+                                      child: Center(
+                                        child: Text(
+                                          "There is no tour guides in this place",
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+
+                                  final data = snapshot.data.docs;
+                                  List<TourGuideCard> TourGuides = [];
+                                  for (var tourGuide in data) {
+                                    TourGuides.add(
+                                      TourGuideCard(
+                                        tourGuide.get('userName'),
+                                      ),
+                                    );
+                                  }
+
+                                  return SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: TourGuides,
+                                    ),
+                                  );
+                                  return Center(
+                                    child: Text('There is no places'),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black54,
+                        ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            InkWell(
-                              borderRadius: BorderRadius.circular(25),
-                              onTap: () {},
-                              child: Container(
-                                decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: Colors.black45,
-                                        offset: Offset(0, 5.0), //(x,y)
-                                        blurRadius: 7,
-                                      ),
-                                    ],
-                                    color: Color(0xFFF2945E),
-                                    borderRadius: BorderRadius.circular(25)),
-                                width: 130,
-                                height: 130,
-                                child: Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 30,
-                                          right: 30,
-                                          top: 15,
-                                          bottom: 15),
+                            FutureBuilder(
+                                future: check,
+                                builder: (context, snapshot) {
+                                  // ignore: unrelated_type_equality_checks
+                                  if (snapshot.hasData) {
+                                    return InkWell(
+                                      borderRadius: BorderRadius.circular(25),
+                                      onTap: () {
+                                        setState(() {});
+                                        print(Authentication.currntUserEmail);
+                                        print(Authentication.TourGuide);
+                                        print(Authentication.currntUsername);
+                                      },
                                       child: Container(
-                                          child: Image.asset(
-                                        "assets/images/checkIn.png",
-                                        color: Colors.white,
-                                      )),
-                                    ),
-                                    Text(
-                                      'Check In',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontFamily: 'RocknRollOne',
-                                        fontSize: 16,
+                                        decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black45,
+                                                offset: Offset(0, 5.0), //(x,y)
+                                                blurRadius: 7,
+                                              ),
+                                            ],
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
+                                        width: 130,
+                                        height: 130,
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 30,
+                                                  right: 30,
+                                                  top: 15,
+                                                  bottom: 15),
+                                              child: Container(
+                                                  child: Image.asset(
+                                                "assets/images/checkIn.png",
+                                                color: Color(0xFFF2945E),
+                                              )),
+                                            ),
+                                            Text(
+                                              'Checked in',
+                                              style: TextStyle(
+                                                color: Color(0xFFF2945E),
+                                                fontFamily: 'RocknRollOne',
+                                                fontSize: 16,
+                                              ),
+                                            )
+                                          ],
+                                        ),
                                       ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ),
+                                    );
+                                  } else {
+                                    return InkWell(
+                                      borderRadius: BorderRadius.circular(25),
+                                      onTap: () {
+                                        setState(() {});
+                                        FirebaseFirestore.instance
+                                            .collection('places')
+                                            .doc('${globals.currentPlace}')
+                                            .collection('visitors')
+                                            .doc(
+                                                '${Authentication.currntUsername}')
+                                            .set({
+                                          'userName':
+                                              Authentication.currntUsername
+                                        });
+
+                                        print(Authentication.currntUserEmail);
+                                        print(Authentication.TourGuide);
+                                        print(Authentication.currntUsername);
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black45,
+                                                offset: Offset(0, 5.0), //(x,y)
+                                                blurRadius: 7,
+                                              ),
+                                            ],
+                                            color: Color(0xFFF2945E),
+                                            borderRadius:
+                                                BorderRadius.circular(25)),
+                                        width: 130,
+                                        height: 130,
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  left: 30,
+                                                  right: 30,
+                                                  top: 15,
+                                                  bottom: 15),
+                                              child: Container(
+                                                  child: Image.asset(
+                                                "assets/images/checkIn.png",
+                                                color: Colors.white,
+                                              )),
+                                            ),
+                                            Text(
+                                              'Check in',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontFamily: 'RocknRollOne',
+                                                fontSize: 16,
+                                              ),
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                }),
                             SizedBox(
                               width: 20,
                             ),

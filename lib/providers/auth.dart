@@ -143,16 +143,22 @@ class Authentication with ChangeNotifier {
         await _firebaseAuth
             .signInWithEmailAndPassword(email: email, password: password)
             .then((value) async {
+          currntUserEmail = _firebaseAuth.currentUser.email;
+          TourGuide = false;
           final prefs = await SharedPreferences.getInstance();
-          prefs.setString('email', _firebaseAuth.currentUser.email);
-          prefs.setInt("userType", 1);
           dataBase
               .collection("users")
               .doc('normalUsers')
               .collection("normalUsers")
               .where('email', isEqualTo: _firebaseAuth.currentUser.email)
               .get()
-              .then((value) => {currntUsername = value.docs.first.id});
+              .then((value) => {currntUsername = value.docs.first.id})
+              .then((value) => {
+                    prefs.setString('email', _firebaseAuth.currentUser.email),
+                    prefs.setString('userName', currntUsername),
+                    prefs.setInt("userType", 1),
+                  });
+
           notifyListeners();
           Navigator.pushNamedAndRemoveUntil(
               context, "UserHomeScreen", (r) => false);
@@ -182,16 +188,21 @@ class Authentication with ChangeNotifier {
         await _firebaseAuth
             .signInWithEmailAndPassword(email: email, password: password)
             .then((value) async {
+          currntUserEmail = _firebaseAuth.currentUser.email;
+          TourGuide = true;
           final prefs = await SharedPreferences.getInstance();
-          prefs.setString('email', _firebaseAuth.currentUser.email);
-          prefs.setInt("userType", 0);
           dataBase
               .collection("users")
               .doc('tourGuides')
               .collection("tourGuides")
               .where('email', isEqualTo: _firebaseAuth.currentUser.email)
               .get()
-              .then((value) => {currntUsername = value.docs.first.id});
+              .then((value) => {currntUsername = value.docs.first.id})
+              .then((value) => {
+                    prefs.setString('email', _firebaseAuth.currentUser.email),
+                    prefs.setString('userName', currntUsername),
+                    prefs.setInt("userType", 0),
+                  });
           notifyListeners();
 
           Navigator.pushNamedAndRemoveUntil(

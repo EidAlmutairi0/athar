@@ -120,8 +120,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                               plac.get('openingHours'),
                               plac.get('tekPrice'),
                               plac.get('webSite'),
-                              plac.get('visiters'),
-                              plac.get('tourGuides'),
                               plac.get("images"),
                               plac.get('latitude'),
                               plac.get('longitude')),
