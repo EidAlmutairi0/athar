@@ -48,7 +48,7 @@ class _TourGuidesScreenState extends State<TourGuidesScreen> {
                   padding: const EdgeInsets.only(top: 50),
                   child: Center(
                     child: Text(
-                      "There is no tour guides in this place",
+                      "There is no tour guides for this place",
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,

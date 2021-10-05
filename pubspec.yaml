@@ -40,8 +40,8 @@ dependencies:
   carousel_slider: ^4.0.0
   url_launcher: ^6.0.12
   line_icons: ^2.0.1
-  flutter_share: ^2.0.0
-
+  smooth_star_rating: ^1.1.1
+  cool_alert: ^1.1.0
 
 
   email_validator: ^2.0.1
@@ -69,6 +69,7 @@ flutter:
      - assets/images/star.png
      - assets/images/SplashScreen.png
      - assets/images/checkIn.png
+
 
   #   - images/a_dot_ham.jpeg
 

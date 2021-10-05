@@ -163,26 +163,28 @@ class PlaceCard extends StatelessWidget {
                                   fontSize: 12,
                                 ),
                               ),
-                        Row(
-                          children: [
-                            Text(
-                              PlaceTotalRate.toString(),
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontFamily: 'RocknRollOne',
-                                fontSize: 12,
-                              ),
-                            ),
-                            SizedBox(
-                              width: 2,
-                            ),
-                            Image.asset(
-                              "assets/images/star.png",
-                              width: 15,
-                              height: 15,
-                            )
-                          ],
-                        ),
+                        (PlaceTotalRate != 0.1)
+                            ? Row(
+                                children: [
+                                  Text(
+                                    PlaceTotalRate.toString(),
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontFamily: 'RocknRollOne',
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 2,
+                                  ),
+                                  Image.asset(
+                                    "assets/images/star.png",
+                                    width: 15,
+                                    height: 15,
+                                  )
+                                ],
+                              )
+                            : Container()
                       ],
                     )
                   ],

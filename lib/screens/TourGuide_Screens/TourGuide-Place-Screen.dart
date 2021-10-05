@@ -7,7 +7,6 @@ import '/globals.dart' as globals;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/screens/Tourguides-Screen.dart';
 import 'package:athar/screens/Visitors-Screen.dart';
-import 'package:flutter_share/flutter_share.dart';
 import '../Place-Reviews-Screen.dart';
 import 'package:athar/providers/auth.dart';
 
@@ -134,31 +133,6 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                             },
                           )),
                         ),
-                        Expanded(child: Container()),
-                        Container(
-                          alignment: Alignment.topRight,
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black45,
-                                  offset: Offset(0, 5.0), //(x,y)
-                                  blurRadius: 5,
-                                ),
-                              ],
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(100)),
-                          child: Center(
-                              child: IconButton(
-                            color: Color(0xFFF2945E),
-                            icon: Icon(Icons.share_rounded),
-                            onPressed: () {
-                              FlutterShare.shareFile(
-                                  title: 'test', filePath: 'test');
-                            },
-                          )),
-                        ),
                       ],
                     ),
                   ),
@@ -205,26 +179,28 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                               SizedBox(
                                 height: 4,
                               ),
-                              Row(
-                                children: [
-                                  Text(
-                                    widget.PlaceTotalRate.toString(),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: 'RocknRollOne',
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 2,
-                                  ),
-                                  Image.asset(
-                                    "assets/images/star.png",
-                                    width: 15,
-                                    height: 15,
-                                  )
-                                ],
-                              ),
+                              (widget.PlaceTotalRate != 0.1)
+                                  ? Row(
+                                      children: [
+                                        Text(
+                                          widget.PlaceTotalRate.toString(),
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontFamily: 'RocknRollOne',
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 2,
+                                        ),
+                                        Image.asset(
+                                          "assets/images/star.png",
+                                          width: 15,
+                                          height: 15,
+                                        )
+                                      ],
+                                    )
+                                  : Container()
                             ],
                           )
                         ],
@@ -398,7 +374,13 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                 ),
                               ),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              PlaceReviewsScreen()));
+                                },
                                 child: Container(
                                   child: Icon(
                                     Icons.arrow_forward_ios_sharp,
@@ -528,7 +510,7 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                       padding: const EdgeInsets.only(top: 50),
                                       child: Center(
                                         child: Text(
-                                          "There is no tour guides in this place",
+                                          "There is no tour guides for this place",
                                           style: TextStyle(
                                             fontSize: 20,
                                             color: Colors.black,
