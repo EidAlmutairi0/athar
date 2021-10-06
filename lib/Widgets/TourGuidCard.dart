@@ -12,14 +12,17 @@ class TourGuideCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircleAvatar(
-            child: Icon(
-              Icons.person_outline_outlined,
-              size: 50,
-              color: Colors.white54,
+          Padding(
+            padding: const EdgeInsets.only(left: 10),
+            child: CircleAvatar(
+              child: Icon(
+                Icons.person_outline_outlined,
+                size: 50,
+                color: Colors.white54,
+              ),
+              radius: 40,
+              backgroundColor: Colors.grey,
             ),
-            radius: 40,
-            backgroundColor: Colors.grey,
           ),
           SizedBox(
             height: 10,

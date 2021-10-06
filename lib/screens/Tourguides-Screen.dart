@@ -16,68 +16,70 @@ class _TourGuidesScreenState extends State<TourGuidesScreen> {
         centerTitle: true,
         title: Text('Tour Guides'),
       ),
-      body: Center(
-        child: Container(
-          child: StreamBuilder<QuerySnapshot>(
-            stream: FirebaseFirestore.instance
-                .collection('places')
-                .doc('${globals.currentPlace}')
-                .collection('Tour Guides')
-                .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasError) {
-                return Center(
-                  child: Text('Something went wrong'),
-                );
-                return Center(
-                  child: Text('Something went wrong'),
-                );
-              }
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Center(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 50),
-                    child: CircularProgressIndicator(
-                      color: Color(0xFFF2945E),
-                    ),
-                  ),
-                );
-              }
-              if (snapshot.requireData.docs.isEmpty) {
-                return Padding(
-                  padding: const EdgeInsets.only(top: 50),
-                  child: Center(
-                    child: Text(
-                      "There is no tour guides for this place",
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.black,
+      body: SingleChildScrollView(
+        child: Center(
+          child: Container(
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('places')
+                  .doc('${globals.currentPlace}')
+                  .collection('Tour Guides')
+                  .snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Something went wrong'),
+                  );
+                  return Center(
+                    child: Text('Something went wrong'),
+                  );
+                }
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 50),
+                      child: CircularProgressIndicator(
+                        color: Color(0xFFF2945E),
                       ),
                     ),
+                  );
+                }
+                if (snapshot.requireData.docs.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 50),
+                    child: Center(
+                      child: Text(
+                        "There is no tour guides for this place",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  );
+                }
+
+                final data = snapshot.data.docs;
+                List<TourGuideBigCard> TourGuides = [];
+                for (var tourGuide in data) {
+                  TourGuides.add(
+                    TourGuideBigCard(
+                      tourGuide.get('userName'),
+                    ),
+                  );
+                }
+
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Column(
+                    children: TourGuides,
                   ),
                 );
-              }
-
-              final data = snapshot.data.docs;
-              List<TourGuideBigCard> TourGuides = [];
-              for (var tourGuide in data) {
-                TourGuides.add(
-                  TourGuideBigCard(
-                    tourGuide.get('userName'),
-                  ),
+                return Center(
+                  child: Text('There is no places'),
                 );
-              }
-
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Column(
-                  children: TourGuides,
-                ),
-              );
-              return Center(
-                child: Text('There is no places'),
-              );
-            },
+              },
+            ),
           ),
         ),
       ),

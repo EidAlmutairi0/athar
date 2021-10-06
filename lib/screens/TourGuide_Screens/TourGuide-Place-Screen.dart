@@ -8,9 +8,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/screens/Tourguides-Screen.dart';
 import 'package:athar/screens/Visitors-Screen.dart';
 import '../Place-Reviews-Screen.dart';
+import 'package:geolocator/geolocator.dart';
+
 import 'package:athar/providers/auth.dart';
 
 class TourguidePlaceScreen extends StatefulWidget {
+  var loc = Geolocator();
+
   String PlaceName;
   double PlaceTotalRate;
   String Location;
@@ -41,7 +45,9 @@ class TourguidePlaceScreen extends StatefulWidget {
     this.tekPrice = tekPrice;
     this.webSite = webSite;
     this.images = images;
-    this.dis = dis;
+    dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
+            placeLatitude, placeLongitude)) /
+        1000;
   }
 
   @override
@@ -50,21 +56,12 @@ class TourguidePlaceScreen extends StatefulWidget {
 
 class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
     with TickerProviderStateMixin {
-  Future check;
-  Future chekSub() async {
-    return await FirebaseFirestore.instance
-        .collection('places')
-        .doc('${globals.currentPlace}')
-        .collection('Tour Guides')
-        .doc('${Authentication.currntUsername}')
-        .snapshots();
-  }
+  bool check;
 
   TabController _controller;
   Image VRimage;
   @override
   void initState() {
-    check = chekSub();
     _controller = new TabController(length: 2, vsync: this);
 
     super.initState();
@@ -551,115 +548,160 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             FutureBuilder(
-                                future: check,
-                                builder: (context, snapshot) {
-                                  // ignore: unrelated_type_equality_checks
-                                  if (snapshot.hasData) {
-                                    return InkWell(
-                                      borderRadius: BorderRadius.circular(25),
-                                      onTap: () {
-                                        setState(() {});
-                                        FirebaseFirestore.instance
-                                            .collection('places')
-                                            .doc('${globals.currentPlace}')
-                                            .collection('Tour Guides')
-                                            .doc(
-                                                '${Authentication.currntUsername}')
-                                            .set({
-                                          'userName':
-                                              Authentication.currntUsername
-                                        });
-
-                                        print(Authentication.currntUserEmail);
-                                        print(Authentication.TourGuide);
-                                        print(Authentication.currntUsername);
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black45,
-                                                offset: Offset(0, 5.0), //(x,y)
-                                                blurRadius: 7,
-                                              ),
-                                            ],
-                                            color: Color(0xFFF2945E),
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                        width: 130,
-                                        height: 130,
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 30,
-                                                  right: 30,
-                                                  top: 15,
-                                                  bottom: 15),
-                                              child: Container(
-                                                  child: Image.asset(
-                                                "assets/images/checkIn.png",
-                                                color: Colors.white,
-                                              )),
-                                            ),
-                                            Text(
-                                              'Subscribe',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'RocknRollOne',
-                                                fontSize: 16,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
+                                future: FirebaseFirestore.instance
+                                    .collection('places')
+                                    .doc('${globals.currentPlace}')
+                                    .collection('Tour Guides')
+                                    .doc('${Authentication.currntUsername}')
+                                    .get()
+                                    .then((value) {
+                                  if (value.exists) {
+                                    check = true;
+                                    print('exists');
+                                    print('${Authentication.currntUsername}');
+                                    return check;
                                   } else {
-                                    return InkWell(
-                                      borderRadius: BorderRadius.circular(25),
-                                      onTap: () {
-                                        setState(() {});
-                                        print(Authentication.currntUserEmail);
-                                        print(Authentication.TourGuide);
-                                        print(Authentication.currntUsername);
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black45,
-                                                offset: Offset(0, 5.0), //(x,y)
-                                                blurRadius: 7,
+                                    check = false;
+                                    print(
+                                        '${Authentication.currntUsername} + 1');
+                                    print('not exists');
+                                    return check;
+                                  }
+                                }),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.data == true) {
+                                      return InkWell(
+                                        borderRadius: BorderRadius.circular(25),
+                                        onTap: () {
+                                          FirebaseFirestore.instance
+                                              .collection('places')
+                                              .doc('${globals.currentPlace}')
+                                              .collection('Tour Guides')
+                                              .doc(
+                                                  '${Authentication.currntUsername}')
+                                              .delete();
+                                          setState(() {});
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black45,
+                                                  offset:
+                                                      Offset(0, 5.0), //(x,y)
+                                                  blurRadius: 7,
+                                                ),
+                                              ],
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          width: 130,
+                                          height: 130,
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 30,
+                                                    right: 30,
+                                                    top: 15,
+                                                    bottom: 15),
+                                                child: Container(
+                                                    child: Image.asset(
+                                                  "assets/images/checkIn.png",
+                                                  color: Color(0xFFF2945E),
+                                                )),
                                               ),
+                                              Text(
+                                                'Subscribed',
+                                                style: TextStyle(
+                                                  color: Color(0xFFF2945E),
+                                                  fontFamily: 'RocknRollOne',
+                                                  fontSize: 16,
+                                                ),
+                                              )
                                             ],
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                        width: 130,
-                                        height: 130,
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 30,
-                                                  right: 30,
-                                                  top: 15,
-                                                  bottom: 15),
-                                              child: Container(
-                                                  child: Image.asset(
-                                                "assets/images/checkIn.png",
-                                                color: Color(0xFFF2945E),
-                                              )),
-                                            ),
-                                            Text(
-                                              'Subscribed',
-                                              style: TextStyle(
-                                                color: Color(0xFFF2945E),
-                                                fontFamily: 'RocknRollOne',
-                                                fontSize: 16,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return InkWell(
+                                        borderRadius: BorderRadius.circular(25),
+                                        onTap: () {
+                                          FirebaseFirestore.instance
+                                              .collection('places')
+                                              .doc('${globals.currentPlace}')
+                                              .collection('Tour Guides')
+                                              .doc(
+                                                  '${Authentication.currntUsername}')
+                                              .set({
+                                            'userName':
+                                                Authentication.currntUsername
+                                          });
+                                          setState(() {});
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black45,
+                                                  offset:
+                                                      Offset(0, 5.0), //(x,y)
+                                                  blurRadius: 7,
+                                                ),
+                                              ],
+                                              color: Color(0xFFF2945E),
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          width: 130,
+                                          height: 130,
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 30,
+                                                    right: 30,
+                                                    top: 15,
+                                                    bottom: 15),
+                                                child: Container(
+                                                    child: Image.asset(
+                                                  "assets/images/checkIn.png",
+                                                  color: Colors.white,
+                                                )),
                                               ),
-                                            )
+                                              Text(
+                                                'Subscribe',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontFamily: 'RocknRollOne',
+                                                  fontSize: 16,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black45,
+                                              offset: Offset(0, 5.0), //(x,y)
+                                              blurRadius: 7,
+                                            ),
                                           ],
+                                          color: Color(0xFFF2945E),
+                                          borderRadius:
+                                              BorderRadius.circular(25)),
+                                      width: 130,
+                                      height: 130,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(40),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
                                         ),
                                       ),
                                     );

@@ -59,21 +59,10 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
   TabController _controller;
   Image VRimage;
   @override
-  Future check;
-  Future chekSub() async {
-    check = chekSub();
-
-    return await FirebaseFirestore.instance
-        .collection('places')
-        .doc('${globals.currentPlace}')
-        .collection('Tour Guides')
-        .doc('${Authentication.currntUsername}')
-        .snapshots();
-  }
+  bool check;
 
   void initState() {
     _controller = new TabController(length: 2, vsync: this);
-
     super.initState();
   }
 
@@ -344,18 +333,31 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                 ),
                               ),
                               Container(
-                                height: 100,
                                 margin: const EdgeInsets.only(
-                                  left: 70,
+                                  left: 30,
                                 ),
-                                child: FlatButton(
-                                  child: Image.network(
-                                      'https://i1.wp.com/www.cssscript.com/wp-content/uploads/2018/03/Simple-Location-Picker.png?fit=561%2C421&ssl=1'),
-                                  onPressed: () {
-                                    String url2 =
-                                        'https://www.google.com/maps/place/%D9%82%D8%B5%D8%B1+%D8%A7%D9%84%D9%85%D8%B5%D9%85%D9%83%D8%8C+%D8%A7%D9%84%D8%A7%D9%85%D8%A7%D9%85+%D8%AA%D8%B1%D9%83%D9%8A+%D8%A8%D9%86+%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D9%84%D9%87+%D8%A8%D9%86+%D9%85%D8%AD%D9%85%D8%AF%D8%8C+%D8%A7%D9%84%D8%AF%D9%8A%D8%B1%D8%A9%D8%8C+%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6+12652%E2%80%AD/@24.6312147,46.7155691,17z/data=!3m1!4b1!4m5!3m4!1s0x3e2f05a68ffb79b3:0xaf1c06c11a421767!8m2!3d24.6312147!4d46.7133804';
-                                    launch(url2);
-                                  },
+                                child: Container(
+                                  width: 200,
+                                  child: (widget.Location == '-')
+                                      ? Text(
+                                          widget.Location,
+                                          style: TextStyle(
+                                              fontFamily: 'RocknRollOne'),
+                                        )
+                                      : TextButton(
+                                          style: ButtonStyle(
+                                            padding: MaterialStateProperty.all<
+                                                EdgeInsets>(EdgeInsets.all(0)),
+                                          ),
+                                          child: Text(
+                                            widget.Location,
+                                            style: TextStyle(
+                                                fontFamily: 'RocknRollOne'),
+                                          ),
+                                          onPressed: () {
+                                            launch(widget.Location);
+                                          },
+                                        ),
                                 ),
                               ),
                             ],
@@ -528,7 +530,7 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                   }
 
                                   final data = snapshot.data.docs;
-                                  List<TourGuideCard> TourGuides = [];
+                                  final List<TourGuideCard> TourGuides = [];
                                   for (var tourGuide in data) {
                                     TourGuides.add(
                                       TourGuideCard(
@@ -558,113 +560,160 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             FutureBuilder(
-                                future: check,
-                                builder: (context, snapshot) {
-                                  // ignore: unrelated_type_equality_checks
-                                  if (snapshot.hasData) {
-                                    return InkWell(
-                                      borderRadius: BorderRadius.circular(25),
-                                      onTap: () {
-                                        print(Authentication.currntUserEmail);
-                                        print(Authentication.TourGuide);
-                                        print(Authentication.currntUsername);
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black45,
-                                                offset: Offset(0, 5.0), //(x,y)
-                                                blurRadius: 7,
-                                              ),
-                                            ],
-                                            color: Colors.white,
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                        width: 130,
-                                        height: 130,
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 30,
-                                                  right: 30,
-                                                  top: 15,
-                                                  bottom: 15),
-                                              child: Container(
-                                                  child: Image.asset(
-                                                "assets/images/checkIn.png",
-                                                color: Color(0xFFF2945E),
-                                              )),
-                                            ),
-                                            Text(
-                                              'Checked in',
-                                              style: TextStyle(
-                                                color: Color(0xFFF2945E),
-                                                fontFamily: 'RocknRollOne',
-                                                fontSize: 16,
-                                              ),
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
+                                future: FirebaseFirestore.instance
+                                    .collection('places')
+                                    .doc('${globals.currentPlace}')
+                                    .collection('visitors')
+                                    .doc('${Authentication.currntUsername}')
+                                    .get()
+                                    .then((value) {
+                                  if (value.exists) {
+                                    check = true;
+                                    print('exists');
+                                    print('${Authentication.currntUsername}');
+                                    return check;
                                   } else {
-                                    return InkWell(
-                                      borderRadius: BorderRadius.circular(25),
-                                      onTap: () {
-                                        FirebaseFirestore.instance
-                                            .collection('places')
-                                            .doc('${globals.currentPlace}')
-                                            .collection('visitors')
-                                            .doc(
-                                                '${Authentication.currntUsername}')
-                                            .set({
-                                          'userName':
-                                              Authentication.currntUsername
-                                        });
-
-                                        print(Authentication.currntUserEmail);
-                                        print(Authentication.TourGuide);
-                                        print(Authentication.currntUsername);
-                                      },
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.black45,
-                                                offset: Offset(0, 5.0), //(x,y)
-                                                blurRadius: 7,
+                                    check = false;
+                                    print(
+                                        '${Authentication.currntUsername} + 1');
+                                    print('not exists');
+                                    return check;
+                                  }
+                                }),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.done) {
+                                    if (snapshot.data == true) {
+                                      return InkWell(
+                                        borderRadius: BorderRadius.circular(25),
+                                        onTap: () {
+                                          FirebaseFirestore.instance
+                                              .collection('places')
+                                              .doc('${globals.currentPlace}')
+                                              .collection('visitors')
+                                              .doc(
+                                                  '${Authentication.currntUsername}')
+                                              .delete();
+                                          setState(() {});
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black45,
+                                                  offset:
+                                                      Offset(0, 5.0), //(x,y)
+                                                  blurRadius: 7,
+                                                ),
+                                              ],
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          width: 130,
+                                          height: 130,
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 30,
+                                                    right: 30,
+                                                    top: 15,
+                                                    bottom: 15),
+                                                child: Container(
+                                                    child: Image.asset(
+                                                  "assets/images/checkIn.png",
+                                                  color: Color(0xFFF2945E),
+                                                )),
                                               ),
+                                              Text(
+                                                'Checked in',
+                                                style: TextStyle(
+                                                  color: Color(0xFFF2945E),
+                                                  fontFamily: 'RocknRollOne',
+                                                  fontSize: 16,
+                                                ),
+                                              )
                                             ],
-                                            color: Color(0xFFF2945E),
-                                            borderRadius:
-                                                BorderRadius.circular(25)),
-                                        width: 130,
-                                        height: 130,
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  left: 30,
-                                                  right: 30,
-                                                  top: 15,
-                                                  bottom: 15),
-                                              child: Container(
-                                                  child: Image.asset(
-                                                "assets/images/checkIn.png",
-                                                color: Colors.white,
-                                              )),
-                                            ),
-                                            Text(
-                                              'Check in',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontFamily: 'RocknRollOne',
-                                                fontSize: 16,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return InkWell(
+                                        borderRadius: BorderRadius.circular(25),
+                                        onTap: () {
+                                          FirebaseFirestore.instance
+                                              .collection('places')
+                                              .doc('${globals.currentPlace}')
+                                              .collection('visitors')
+                                              .doc(
+                                                  '${Authentication.currntUsername}')
+                                              .set({
+                                            'userName':
+                                                Authentication.currntUsername
+                                          });
+                                          setState(() {});
+                                        },
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.black45,
+                                                  offset:
+                                                      Offset(0, 5.0), //(x,y)
+                                                  blurRadius: 7,
+                                                ),
+                                              ],
+                                              color: Color(0xFFF2945E),
+                                              borderRadius:
+                                                  BorderRadius.circular(25)),
+                                          width: 130,
+                                          height: 130,
+                                          child: Column(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    left: 30,
+                                                    right: 30,
+                                                    top: 15,
+                                                    bottom: 15),
+                                                child: Container(
+                                                    child: Image.asset(
+                                                  "assets/images/checkIn.png",
+                                                  color: Colors.white,
+                                                )),
                                               ),
-                                            )
+                                              Text(
+                                                'Check in',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontFamily: 'RocknRollOne',
+                                                  fontSize: 16,
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                  } else {
+                                    return Container(
+                                      decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: Colors.black45,
+                                              offset: Offset(0, 5.0), //(x,y)
+                                              blurRadius: 7,
+                                            ),
                                           ],
+                                          color: Color(0xFFF2945E),
+                                          borderRadius:
+                                              BorderRadius.circular(25)),
+                                      width: 130,
+                                      height: 130,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(40),
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
                                         ),
                                       ),
                                     );
