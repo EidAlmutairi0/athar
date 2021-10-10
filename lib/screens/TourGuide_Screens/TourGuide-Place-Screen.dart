@@ -334,18 +334,31 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                 ),
                               ),
                               Container(
-                                height: 100,
                                 margin: const EdgeInsets.only(
-                                  left: 70,
+                                  left: 30,
                                 ),
-                                child: FlatButton(
-                                  child: Image.network(
-                                      'https://i1.wp.com/www.cssscript.com/wp-content/uploads/2018/03/Simple-Location-Picker.png?fit=561%2C421&ssl=1'),
-                                  onPressed: () {
-                                    String url2 =
-                                        'https://www.google.com/maps/place/%D9%82%D8%B5%D8%B1+%D8%A7%D9%84%D9%85%D8%B5%D9%85%D9%83%D8%8C+%D8%A7%D9%84%D8%A7%D9%85%D8%A7%D9%85+%D8%AA%D8%B1%D9%83%D9%8A+%D8%A8%D9%86+%D8%B9%D8%A8%D8%AF%D8%A7%D9%84%D9%84%D9%87+%D8%A8%D9%86+%D9%85%D8%AD%D9%85%D8%AF%D8%8C+%D8%A7%D9%84%D8%AF%D9%8A%D8%B1%D8%A9%D8%8C+%D8%A7%D9%84%D8%B1%D9%8A%D8%A7%D8%B6+12652%E2%80%AD/@24.6312147,46.7155691,17z/data=!3m1!4b1!4m5!3m4!1s0x3e2f05a68ffb79b3:0xaf1c06c11a421767!8m2!3d24.6312147!4d46.7133804';
-                                    launch(url2);
-                                  },
+                                child: Container(
+                                  width: 200,
+                                  child: (widget.Location == '-')
+                                      ? Text(
+                                          widget.Location,
+                                          style: TextStyle(
+                                              fontFamily: 'RocknRollOne'),
+                                        )
+                                      : TextButton(
+                                          style: ButtonStyle(
+                                            padding: MaterialStateProperty.all<
+                                                EdgeInsets>(EdgeInsets.all(0)),
+                                          ),
+                                          child: Text(
+                                            widget.Location,
+                                            style: TextStyle(
+                                                fontFamily: 'RocknRollOne'),
+                                          ),
+                                          onPressed: () {
+                                            launch(widget.Location);
+                                          },
+                                        ),
                                 ),
                               ),
                             ],
