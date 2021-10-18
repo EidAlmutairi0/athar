@@ -9,7 +9,7 @@ import 'package:athar/screens/Tourguides-Screen.dart';
 import 'package:athar/screens/Visitors-Screen.dart';
 import '../Place-Reviews-Screen.dart';
 import 'package:geolocator/geolocator.dart';
-
+import '../LocationService.dart';
 import 'package:athar/providers/auth.dart';
 
 class TourguidePlaceScreen extends StatefulWidget {
@@ -23,6 +23,8 @@ class TourguidePlaceScreen extends StatefulWidget {
   String tekPrice;
   String webSite;
   List images;
+  double placeLatitude;
+  double placeLongitude;
   double dis;
 
   TourguidePlaceScreen(
@@ -45,6 +47,8 @@ class TourguidePlaceScreen extends StatefulWidget {
     this.tekPrice = tekPrice;
     this.webSite = webSite;
     this.images = images;
+    this.placeLatitude = placeLatitude;
+    this.placeLongitude = placeLongitude;
     dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
             placeLatitude, placeLongitude)) /
         1000;
@@ -60,11 +64,22 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
 
   TabController _controller;
   Image VRimage;
+  String previewImageUrl =
+      'https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=$GOOGLE_API_KEY';
+
   @override
   void initState() {
     _controller = new TabController(length: 2, vsync: this);
-
+    _getLocation();
     super.initState();
+  }
+
+  Future<String> _getLocation() async {
+    final staticMAPImage = await LocationService.generateLocationPreviewImage(
+        widget.PlaceName, widget.placeLatitude, widget.placeLongitude);
+    setState(() {
+      previewImageUrl = staticMAPImage;
+    });
   }
 
   List<Widget> returnImages(images) {
@@ -350,11 +365,7 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                             padding: MaterialStateProperty.all<
                                                 EdgeInsets>(EdgeInsets.all(0)),
                                           ),
-                                          child: Text(
-                                            widget.Location,
-                                            style: TextStyle(
-                                                fontFamily: 'RocknRollOne'),
-                                          ),
+                                          child: Image.network(previewImageUrl),
                                           onPressed: () {
                                             launch(widget.Location);
                                           },

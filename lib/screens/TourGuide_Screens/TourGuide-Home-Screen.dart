@@ -3,6 +3,8 @@ import '/providers/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/Widgets/PlaceCard.dart';
 import '/Search.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '/globals.dart' as globals;
 
 class TourGuideHomeScreen extends StatefulWidget {
   @override
@@ -10,6 +12,29 @@ class TourGuideHomeScreen extends StatefulWidget {
 }
 
 class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
+  Future getPlaces() async {
+    var dataBase =
+        await FirebaseFirestore.instance.collection('places').get().then(
+      (value) {
+        for (int i = 0; i < value.docs.length; i++) {
+          globals.places.add(
+            Marker(
+              markerId: MarkerId(value.docs[i].id),
+              position: LatLng(
+                value.docs[i].get('latitude'),
+                value.docs[i].get('longitude'),
+              ),
+              icon: BitmapDescriptor.defaultMarker,
+              infoWindow: InfoWindow(
+                title: value.docs[i].get('name'),
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
   final auth = Authentication();
   @override
   String region = 'All';
@@ -17,6 +42,7 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
   String sortBy = 'Distance';
   List<String> sortByList = ['Distance', 'Rating'];
   void initState() {
+    getPlaces();
     super.initState();
   }
 

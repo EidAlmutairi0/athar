@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '/providers/auth.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'User-Home-Screen.dart';
-import 'User-Map-Screen.dart';
+import '../Map-Screen.dart';
 import 'User-Profile-Screen.dart';
 
 class UserMainScreen extends StatefulWidget {
@@ -13,7 +13,7 @@ class UserMainScreen extends StatefulWidget {
 class _UserMainScreenState extends State<UserMainScreen> {
   final auth = Authentication();
   int selectedScreen = 1;
-  final _Screens = [UserProfileScreen(), UserHomeScreen(), UserMapScreen()];
+  final _Screens = [UserProfileScreen(), UserHomeScreen(), MapScreen()];
 
   @override
   Widget build(BuildContext context) {

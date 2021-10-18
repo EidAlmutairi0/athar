@@ -1,11 +1,10 @@
-import 'package:athar/screens/TourGuide_Screens/TourGuide-Map-Screen.dart';
 import 'package:athar/screens/TourGuide_Screens/TourGuide-Profile-Screen.dart';
 import 'package:flutter/material.dart';
 import '/providers/auth.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 import '../TourGuide_Screens/TourGuide-Home-Screen.dart';
-import '../TourGuide_Screens/TourGuide-Map-Screen.dart';
+import '../Map-Screen.dart';
 import '../TourGuide_Screens/TourGuide-Profile-Screen.dart';
 
 class TourGuideMainScreen extends StatefulWidget {
@@ -19,7 +18,7 @@ class _TourGuideMainScreenState extends State<TourGuideMainScreen> {
   final _Screens = [
     TourGuideProfileScreen(),
     TourGuideHomeScreen(),
-    TourGuideMapScreen()
+    MapScreen()
   ];
 
   @override

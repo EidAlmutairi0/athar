@@ -2,8 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '/providers/auth.dart';
 import '/Search.dart';
+import '/globals.dart' as globals;
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/Widgets/PlaceCard.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class UserHomeScreen extends StatefulWidget {
   @override
@@ -17,7 +20,33 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   List<String> regionsList = ['All', 'Riyadh', 'Mecca', 'Eastern'];
   String sortBy = 'Distance';
   List<String> sortByList = ['Distance', 'Rating'];
+
+  Future getPlaces() async {
+    var dataBase =
+        await FirebaseFirestore.instance.collection('places').get().then(
+      (value) {
+        for (int i = 0; i < value.docs.length; i++) {
+          globals.places.add(
+            Marker(
+              markerId: MarkerId(value.docs[i].id),
+              position: LatLng(
+                value.docs[i].get('latitude'),
+                value.docs[i].get('longitude'),
+              ),
+              icon: BitmapDescriptor.defaultMarker,
+              infoWindow: InfoWindow(
+                onTap: () {},
+                title: value.docs[i].get('name'),
+              ),
+            ),
+          );
+        }
+      },
+    );
+  }
+
   void initState() {
+    getPlaces();
     super.initState();
   }
 

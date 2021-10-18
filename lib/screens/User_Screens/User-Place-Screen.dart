@@ -10,7 +10,7 @@ import 'package:athar/screens/Tourguides-Screen.dart';
 import 'package:athar/screens/Visitors-Screen.dart';
 import 'package:athar/providers/auth.dart';
 import 'package:geolocator/geolocator.dart';
-import '../Place-Reviews-Screen.dart';
+import '../LocationService.dart';
 
 class UserPlaceScreen extends StatefulWidget {
   var loc = Geolocator();
@@ -23,6 +23,8 @@ class UserPlaceScreen extends StatefulWidget {
   String tekPrice;
   String webSite;
   List images;
+  double placeLatitude;
+  double placeLongitude;
   double dis;
 
   UserPlaceScreen(
@@ -45,6 +47,8 @@ class UserPlaceScreen extends StatefulWidget {
     this.tekPrice = tekPrice;
     this.webSite = webSite;
     this.images = images;
+    this.placeLatitude = placeLatitude;
+    this.placeLongitude = placeLongitude;
     dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
             placeLatitude, placeLongitude)) /
         1000;
@@ -59,11 +63,22 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
   TabController _controller;
   Image VRimage;
   @override
+  String previewImageUrl =
+      'https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=$GOOGLE_API_KEY';
   bool check;
 
   void initState() {
     _controller = new TabController(length: 2, vsync: this);
+    _getLocation();
     super.initState();
+  }
+
+  Future<String> _getLocation() async {
+    final staticMAPImage = await LocationService.generateLocationPreviewImage(
+        widget.PlaceName, widget.placeLatitude, widget.placeLongitude);
+    setState(() {
+      previewImageUrl = staticMAPImage;
+    });
   }
 
   List<Widget> returnImages(images) {
@@ -337,7 +352,7 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                   left: 30,
                                 ),
                                 child: Container(
-                                  width: 200,
+                                  width: 300,
                                   child: (widget.Location == '-')
                                       ? Text(
                                           widget.Location,
@@ -349,11 +364,7 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                             padding: MaterialStateProperty.all<
                                                 EdgeInsets>(EdgeInsets.all(0)),
                                           ),
-                                          child: Text(
-                                            widget.Location,
-                                            style: TextStyle(
-                                                fontFamily: 'RocknRollOne'),
-                                          ),
+                                          child: Image.network(previewImageUrl),
                                           onPressed: () {
                                             launch(widget.Location);
                                           },
@@ -499,9 +510,6 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                     return Center(
                                       child: Text('Something went wrong'),
                                     );
-                                    return Center(
-                                      child: Text('Something went wrong'),
-                                    );
                                   }
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -544,9 +552,6 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                     child: Row(
                                       children: TourGuides,
                                     ),
-                                  );
-                                  return Center(
-                                    child: Text('There is no places'),
                                   );
                                 },
                               ),
