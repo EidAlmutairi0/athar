@@ -34,6 +34,7 @@ class _MapScreenState extends State<MapScreen> {
               subdomains: ['a', 'b', 'c'],
             ),
             MarkerClusterLayerOptions(
+              showPolygon: false,
               disableClusteringAtZoom: 10,
               maxClusterRadius: 120,
               size: Size(40, 40),
@@ -54,7 +55,6 @@ class _MapScreenState extends State<MapScreen> {
                 return FloatingActionButton(
                   backgroundColor: Color(0xFFF2945E),
                   child: Text(markers.length.toString()),
-                  onPressed: null,
                 );
               },
             ),

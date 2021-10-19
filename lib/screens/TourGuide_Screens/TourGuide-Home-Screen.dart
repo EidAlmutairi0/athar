@@ -17,8 +17,8 @@ class TourGuideHomeScreen extends StatefulWidget {
 class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
   Future getPlaces() async {
     var dataBase =
-    await FirebaseFirestore.instance.collection('places').get().then(
-          (value) {
+        await FirebaseFirestore.instance.collection('places').get().then(
+      (value) {
         for (int i = 0; i < value.docs.length; i++) {
           globals.places.add(
             Marker(
@@ -50,7 +50,7 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
                                 backgroundColor: Colors.white,
                                 title: Row(
                                   mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       value.docs[i].id,
@@ -62,7 +62,7 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
                                     ),
                                     Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.spaceBetween,
                                       children: [
                                         Container(
                                           child: Row(
@@ -130,7 +130,6 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
       },
     );
   }
-
 
   final auth = Authentication();
   @override
