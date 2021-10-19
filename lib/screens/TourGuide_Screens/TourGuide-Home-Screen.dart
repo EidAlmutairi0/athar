@@ -1,10 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '/providers/auth.dart';
+import '/Search.dart';
+import '/globals.dart' as globals;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/Widgets/PlaceCard.dart';
-import '/Search.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '/globals.dart' as globals;
+import 'package:latlong2/latlong.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TourGuideHomeScreen extends StatefulWidget {
   @override
@@ -14,19 +17,112 @@ class TourGuideHomeScreen extends StatefulWidget {
 class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
   Future getPlaces() async {
     var dataBase =
-        await FirebaseFirestore.instance.collection('places').get().then(
-      (value) {
+    await FirebaseFirestore.instance.collection('places').get().then(
+          (value) {
         for (int i = 0; i < value.docs.length; i++) {
           globals.places.add(
             Marker(
-              markerId: MarkerId(value.docs[i].id),
-              position: LatLng(
+              height: 30,
+              width: 30,
+              point: LatLng(
                 value.docs[i].get('latitude'),
                 value.docs[i].get('longitude'),
               ),
-              icon: BitmapDescriptor.defaultMarker,
-              infoWindow: InfoWindow(
-                title: value.docs[i].get('name'),
+              builder: (ctx) => GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                      isScrollControlled: true,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                      ),
+                      context: ctx,
+                      builder: (builder) {
+                        return Container(
+                          height: 300,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20)),
+                            child: GridTile(
+                              footer: GridTileBar(
+                                backgroundColor: Colors.white,
+                                title: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      value.docs[i].id,
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontFamily: 'RocknRollOne',
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Container(
+                                          child: Row(
+                                            children: [
+                                              Text(
+                                                value.docs[i]
+                                                    .get('PlaceTotalRate')
+                                                    .toString(),
+                                                style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontFamily: 'RocknRollOne',
+                                                  fontSize: 14,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 2,
+                                              ),
+                                              Image.asset(
+                                                "assets/images/star.png",
+                                                width: 18,
+                                                height: 18,
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          width: 5,
+                                        ),
+                                        Container(
+                                          child: IconButton(
+                                            onPressed: () {
+                                              launch(
+                                                value.docs[i].get('Location'),
+                                              );
+                                            },
+                                            icon: Icon(
+                                              Icons.map,
+                                              color: Colors.grey,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              child: Image.network(
+                                value.docs[i].get('images')[0],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        );
+                      });
+                },
+                child: Icon(
+                  Icons.location_on,
+                  size: 35,
+                  color: Color(0xFFF2945E),
+                ),
               ),
             ),
           );
@@ -34,6 +130,7 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
       },
     );
   }
+
 
   final auth = Authentication();
   @override
