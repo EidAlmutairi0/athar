@@ -21,6 +21,7 @@ class _MapScreenState extends State<MapScreen> {
       body: Center(
         child: FlutterMap(
           options: MapOptions(
+
             center: globals.camPos,
             zoom: 15,
             onTap: (_, a) => _popupController.hidePopup(),

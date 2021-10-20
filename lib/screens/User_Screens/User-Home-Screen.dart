@@ -26,6 +26,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     var dataBase =
         await FirebaseFirestore.instance.collection('places').get().then(
       (value) {
+        globals.places = [];
         for (int i = 0; i < value.docs.length; i++) {
           globals.places.add(
             Marker(
