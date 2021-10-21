@@ -29,6 +29,8 @@ ENV['COCOAPODS_DISABLE_STATS'] = 'true'
    use_frameworks!
    use_modular_headers!
    pod 'GoogleMaps'
+   pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '8.6.0'
+
 
 
 
