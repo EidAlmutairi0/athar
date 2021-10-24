@@ -83,6 +83,7 @@ class Authentication with ChangeNotifier {
               'password': password,
               'userName': userName,
               'isTourGuide': true,
+              'expiryDate': "2000-01-01"
             });
             mess = "tourGuide signed up";
             final prefs = await SharedPreferences.getInstance();
