@@ -606,6 +606,15 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                               .doc(
                                                   '${Authentication.currntUsername}')
                                               .delete();
+                                          FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc('tourGuides')
+                                              .collection('tourGuides')
+                                              .doc(
+                                                  Authentication.currntUsername)
+                                              .collection('SubscribedPlaces')
+                                              .doc('${globals.currentPlace}')
+                                              .delete();
                                           setState(() {});
                                         },
                                         child: Container(
@@ -662,6 +671,18 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                               .set({
                                             'userName':
                                                 Authentication.currntUsername
+                                          });
+                                          FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc('tourGuides')
+                                              .collection('tourGuides')
+                                              .doc(
+                                                  Authentication.currntUsername)
+                                              .collection('SubscribedPlaces')
+                                              .doc('${globals.currentPlace}')
+                                              .set({
+                                            'PlaceName': globals.currentPlace,
+                                            'image': widget.images,
                                           });
                                           setState(() {});
                                         },

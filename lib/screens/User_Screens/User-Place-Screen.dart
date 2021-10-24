@@ -599,6 +599,15 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                               .doc(
                                                   '${Authentication.currntUsername}')
                                               .delete();
+                                          FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc('normalUsers')
+                                              .collection('normalUsers')
+                                              .doc(
+                                                  Authentication.currntUsername)
+                                              .collection('VisitedPlaces')
+                                              .doc('${globals.currentPlace}')
+                                              .delete();
                                           setState(() {});
                                         },
                                         child: Container(
@@ -655,6 +664,18 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                               .set({
                                             'userName':
                                                 Authentication.currntUsername
+                                          });
+                                          FirebaseFirestore.instance
+                                              .collection('users')
+                                              .doc('normalUsers')
+                                              .collection('normalUsers')
+                                              .doc(
+                                                  Authentication.currntUsername)
+                                              .collection('VisitedPlaces')
+                                              .doc('${globals.currentPlace}')
+                                              .set({
+                                            'PlaceName': globals.currentPlace,
+                                            'image': widget.images,
                                           });
                                           setState(() {});
                                         },

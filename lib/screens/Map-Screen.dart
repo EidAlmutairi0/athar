@@ -22,7 +22,7 @@ class _MapScreenState extends State<MapScreen> {
         child: FlutterMap(
           options: MapOptions(
             center: globals.camPos,
-            zoom: 15,
+            zoom: 12,
             onTap: (_, a) => _popupController.hidePopup(),
             plugins: [
               MarkerClusterPlugin(),
