@@ -14,18 +14,26 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
   final dataBase = FirebaseFirestore.instance;
   List<PlaceCard2> PlacesList2 = [];
 
-  @override
-  void dispose() {
-    setState(() {
-      PlacesList2 = [];
-    });
-    super.dispose();
-  }
+  List<String> accountPrivacy = ['Public', "Private"];
+  List<String> languages = ['English', "Arabic"];
+  String currentLanguage = "English";
+  String currentPrivacy = "Public";
 
+  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.settings,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+        ],
         centerTitle: true,
         title: Text('Profile'),
         leading: IconButton(
@@ -72,14 +80,31 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                 ),
                 Positioned(
                   bottom: -50,
-                  child: CircleAvatar(
-                    child: Image.asset(
-                      'assets/images/userDefultAvatar.png',
-                      width: 100,
-                      color: Colors.white,
-                    ),
-                    radius: 70,
-                    backgroundColor: Colors.grey,
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        child: Image.asset(
+                          'assets/images/userDefultAvatar.png',
+                          width: 70,
+                          color: Colors.white,
+                        ),
+                        radius: 50,
+                        backgroundColor: Colors.grey,
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: CircleAvatar(
+                          child: Icon(
+                            Icons.star,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                          radius: 15,
+                          backgroundColor: Color(0xFFF2945E),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -89,13 +114,13 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
               ],
             ),
             SizedBox(
-              height: 50,
+              height: 40,
             ),
             ListTile(
               title: Center(
                 child: Text(
                   Authentication.currntUsername,
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 25),
+                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
                 ),
               ),
               subtitle:
@@ -107,7 +132,8 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Container(
+                InkWell(
+                  onTap: () {},
                   child: Column(
                     children: <Widget>[
                       Text(
@@ -130,7 +156,8 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                 SizedBox(
                   width: 40,
                 ),
-                Container(
+                InkWell(
+                  onTap: () {},
                   child: Column(
                     children: <Widget>[
                       Text(
@@ -215,8 +242,11 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
                           return Center(
-                            child: CircularProgressIndicator(
-                              color: Color(0xFFF2945E),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 60),
+                              child: CircularProgressIndicator(
+                                color: Color(0xFFF2945E),
+                              ),
                             ),
                           );
                         }
@@ -242,7 +272,9 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                         }
 
                         return Row(
-                          children: PlacesList2.sublist(0, 3),
+                          children: (PlacesList2.length > 4)
+                              ? PlacesList2.sublist(0, 3)
+                              : PlacesList2,
                         );
                       },
                     ),
@@ -302,7 +334,7 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
             ),
             Divider(),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -314,20 +346,32 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                       fontSize: 16,
                     ),
                   ),
-                  InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      color: Colors.grey,
-                      size: 16,
+                  DropdownButton(
+                    alignment: AlignmentDirectional.center,
+                    icon: const Icon(Icons.arrow_downward),
+                    iconSize: 24,
+                    elevation: 16,
+                    underline: Container(
+                      decoration: BoxDecoration(color: Colors.black12),
+                      height: 2,
                     ),
+                    items: languages
+                        .map((String item) => DropdownMenuItem<String>(
+                            child: Text(item), value: item))
+                        .toList(),
+                    onChanged: (String value) {
+                      setState(() {
+                        currentLanguage = value;
+                      });
+                    },
+                    value: currentLanguage,
                   ),
                 ],
               ),
             ),
             Divider(),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
@@ -339,13 +383,25 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                       fontSize: 16,
                     ),
                   ),
-                  InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      color: Colors.grey,
-                      size: 16,
+                  DropdownButton(
+                    alignment: AlignmentDirectional.center,
+                    icon: const Icon(Icons.arrow_downward),
+                    iconSize: 24,
+                    elevation: 16,
+                    underline: Container(
+                      decoration: BoxDecoration(color: Colors.black12),
+                      height: 2,
                     ),
+                    items: accountPrivacy
+                        .map((String item) => DropdownMenuItem<String>(
+                            child: Text(item), value: item))
+                        .toList(),
+                    onChanged: (String value) {
+                      setState(() {
+                        currentPrivacy = value;
+                      });
+                    },
+                    value: currentPrivacy,
                   ),
                 ],
               ),

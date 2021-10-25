@@ -10,7 +10,7 @@ class SubscribedPlaces extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Visited Places'),
+        title: Text('Subscribed Places'),
         centerTitle: true,
         backgroundColor: Color(0xFFF2945E),
       ),
