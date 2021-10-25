@@ -83,6 +83,7 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                   child: Stack(
                     children: [
                       CircleAvatar(
+
                         radius: 50,
                         backgroundImage: AssetImage('assets/images/eid.jpg'),
                         backgroundColor: Colors.grey,
