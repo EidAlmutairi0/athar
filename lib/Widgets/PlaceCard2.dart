@@ -60,23 +60,40 @@ class PlaceCard2 extends StatelessWidget {
           onTap: () {
             globals.currentPlace = PlaceName;
             print(globals.currentPlace);
-
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => UserPlaceScreen(
-                        PlaceName,
-                        this.PlaceTotalRate,
-                        this.Location,
-                        this.aboutThePlace,
-                        this.openingHours,
-                        this.tekPrice,
-                        this.webSite,
-                        this.images,
-                        placeLatitude,
-                        placeLongitude,
-                      )),
-            );
+            if (Authentication.TourGuide)
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TourguidePlaceScreen(
+                          PlaceName,
+                          this.PlaceTotalRate,
+                          this.Location,
+                          this.aboutThePlace,
+                          this.openingHours,
+                          this.tekPrice,
+                          this.webSite,
+                          this.images,
+                          placeLatitude,
+                          placeLongitude,
+                        )),
+              );
+            else
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserPlaceScreen(
+                          PlaceName,
+                          this.PlaceTotalRate,
+                          this.Location,
+                          this.aboutThePlace,
+                          this.openingHours,
+                          this.tekPrice,
+                          this.webSite,
+                          this.images,
+                          placeLatitude,
+                          placeLongitude,
+                        )),
+              );
           },
           child: Container(
             height: 140,

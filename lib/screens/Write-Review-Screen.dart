@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:smooth_star_rating/smooth_star_rating.dart';
 import '../providers/auth.dart';
 import 'package:cool_alert/cool_alert.dart';
+import 'package:intl/intl.dart';
 
 class WriteReviewsScreen extends StatefulWidget {
   @override
@@ -13,6 +14,9 @@ class WriteReviewsScreen extends StatefulWidget {
 class _WriteReviewsScreenState extends State<WriteReviewsScreen> {
   double rating = 0.5;
   String review = '';
+  static final DateTime now = DateTime.now();
+  static final DateFormat formatter = DateFormat('yyyy-MM-dd');
+  final String formatted = formatter.format(now);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -143,86 +147,198 @@ class _WriteReviewsScreenState extends State<WriteReviewsScreen> {
                     borderRadius: BorderRadius.circular(15),
                   ),
                   onPressed: () {
-                    FirebaseFirestore.instance
-                        .collection('places')
-                        .doc('${globals.currentPlace}')
-                        .get()
-                        .then((value) => {
-                              if (value.get('numOfRatings') != 0)
-                                {
-                                  FirebaseFirestore.instance
-                                      .collection('places')
-                                      .doc('${globals.currentPlace}')
-                                      .update({
-                                    'PlaceTotalRate':
-                                        ((value.get('PlaceTotalRate') *
-                                                    (value.get('numOfRatings') -
-                                                        1)) +
-                                                rating) /
-                                            (value.get('numOfRatings')),
-                                  }).whenComplete(() {
-                                    FirebaseFirestore.instance
-                                        .collection('places')
-                                        .doc('${globals.currentPlace}')
-                                        .update({
-                                      'numOfRatings': FieldValue.increment(1),
-                                    });
-                                    FirebaseFirestore.instance
-                                        .collection('places')
-                                        .doc('${globals.currentPlace}')
-                                        .collection('reviews')
-                                        .add({
-                                      'username': Authentication.currntUsername,
-                                      'review': review,
-                                      'rate': rating,
-                                    }).whenComplete(() {
-                                      CoolAlert.show(
-                                        barrierDismissible: false,
-                                        onConfirmBtnTap: () {
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                        },
-                                        context: context,
-                                        type: CoolAlertType.success,
-                                        text:
-                                            "Your review was posted successfully!",
-                                      );
-                                    });
-                                  })
-                                }
-                              else
-                                {
-                                  FirebaseFirestore.instance
-                                      .collection('places')
-                                      .doc('${globals.currentPlace}')
-                                      .update({
-                                    'numOfRatings': FieldValue.increment(1),
-                                    'PlaceTotalRate': rating
-                                  }).whenComplete(() {
-                                    FirebaseFirestore.instance
-                                        .collection('places')
-                                        .doc('${globals.currentPlace}')
-                                        .collection('reviews')
-                                        .add({
-                                      'username': Authentication.currntUsername,
-                                      'review': review,
-                                      'rate': rating,
-                                    }).whenComplete(() {
-                                      CoolAlert.show(
-                                        barrierDismissible: false,
-                                        onConfirmBtnTap: () {
-                                          Navigator.pop(context);
-                                          Navigator.pop(context);
-                                        },
-                                        context: context,
-                                        type: CoolAlertType.success,
-                                        text:
-                                            "Your review was posted successfully!",
-                                      );
-                                    });
-                                  })
-                                }
+                    var id;
+
+                    if (Authentication.TourGuide) {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc('tourGuides')
+                          .collection('tourGuides')
+                          .doc("${Authentication.currntUsername}")
+                          .collection('reviews')
+                          .add({
+                        'PlaceName': globals.currentPlace,
+                        'review': review,
+                        'rate': rating,
+                        'Date': formatted,
+                      }).then((value) {
+                        id = value.id;
+                        FirebaseFirestore.instance
+                            .collection('places')
+                            .doc('${globals.currentPlace}')
+                            .get()
+                            .then((value) {
+                          var numOfRatings = value.get('numOfRatings');
+                          var PlaceTotalRate = value.get('PlaceTotalRate');
+                          if (numOfRatings != 0) {
+                            FirebaseFirestore.instance
+                                .collection('places')
+                                .doc('${globals.currentPlace}')
+                                .update({
+                              'PlaceTotalRate':
+                                  ((PlaceTotalRate * (numOfRatings)) + rating) /
+                                      (numOfRatings + 1),
+                            }).whenComplete(() {
+                              FirebaseFirestore.instance
+                                  .collection('places')
+                                  .doc('${globals.currentPlace}')
+                                  .update({
+                                'numOfRatings': FieldValue.increment(1),
+                              });
+
+                              FirebaseFirestore.instance
+                                  .collection('places')
+                                  .doc('${globals.currentPlace}')
+                                  .collection('reviews')
+                                  .add({
+                                'username': Authentication.currntUsername,
+                                'review': review,
+                                'rate': rating,
+                                'Date': formatted,
+                                'id': id,
+                              }).whenComplete(() {
+                                CoolAlert.show(
+                                  barrierDismissible: false,
+                                  onConfirmBtnTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  context: context,
+                                  type: CoolAlertType.success,
+                                  text: "Your review was posted successfully!",
+                                );
+                              });
                             });
+                          } else {
+                            FirebaseFirestore.instance
+                                .collection('places')
+                                .doc('${globals.currentPlace}')
+                                .update({
+                              'numOfRatings': FieldValue.increment(1),
+                              'PlaceTotalRate': rating
+                            }).whenComplete(() {
+                              FirebaseFirestore.instance
+                                  .collection('places')
+                                  .doc('${globals.currentPlace}')
+                                  .collection('reviews')
+                                  .add({
+                                'username': Authentication.currntUsername,
+                                'review': review,
+                                'rate': rating,
+                                'Date': formatted,
+                                'id': id,
+                              }).whenComplete(() {
+                                CoolAlert.show(
+                                  barrierDismissible: false,
+                                  onConfirmBtnTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  context: context,
+                                  type: CoolAlertType.success,
+                                  text: "Your review was posted successfully!",
+                                );
+                              });
+                            });
+                          }
+                        });
+                      });
+                    } else {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc('normalUsers')
+                          .collection('normalUsers')
+                          .doc("${Authentication.currntUsername}")
+                          .collection('reviews')
+                          .add({
+                        'PlaceName': globals.currentPlace,
+                        'review': review,
+                        'rate': rating,
+                        'Date': formatted,
+                      }).then((value) {
+                        id = value.id;
+                        FirebaseFirestore.instance
+                            .collection('places')
+                            .doc('${globals.currentPlace}')
+                            .get()
+                            .then((value) {
+                          var numOfRatings = value.get('numOfRatings');
+                          var PlaceTotalRate = value.get('PlaceTotalRate');
+                          if (numOfRatings != 0) {
+                            FirebaseFirestore.instance
+                                .collection('places')
+                                .doc('${globals.currentPlace}')
+                                .update({
+                              'PlaceTotalRate':
+                                  ((PlaceTotalRate * (numOfRatings)) + rating) /
+                                      (numOfRatings + 1),
+                            }).whenComplete(() {
+                              FirebaseFirestore.instance
+                                  .collection('places')
+                                  .doc('${globals.currentPlace}')
+                                  .update({
+                                'numOfRatings': FieldValue.increment(1),
+                              });
+
+                              FirebaseFirestore.instance
+                                  .collection('places')
+                                  .doc('${globals.currentPlace}')
+                                  .collection('reviews')
+                                  .add({
+                                'username': Authentication.currntUsername,
+                                'review': review,
+                                'rate': rating,
+                                'Date': formatted,
+                                'id': id,
+                              }).whenComplete(() {
+                                CoolAlert.show(
+                                  barrierDismissible: false,
+                                  onConfirmBtnTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                    setState(() {});
+                                  },
+                                  context: context,
+                                  type: CoolAlertType.success,
+                                  text: "Your review was posted successfully!",
+                                );
+                              });
+                            });
+                          } else {
+                            FirebaseFirestore.instance
+                                .collection('places')
+                                .doc('${globals.currentPlace}')
+                                .update({
+                              'numOfRatings': FieldValue.increment(1),
+                              'PlaceTotalRate': rating
+                            }).whenComplete(() {
+                              FirebaseFirestore.instance
+                                  .collection('places')
+                                  .doc('${globals.currentPlace}')
+                                  .collection('reviews')
+                                  .add({
+                                'username': Authentication.currntUsername,
+                                'review': review,
+                                'rate': rating,
+                                'Date': formatted,
+                                'id': id,
+                              }).whenComplete(() {
+                                CoolAlert.show(
+                                  barrierDismissible: false,
+                                  onConfirmBtnTap: () {
+                                    Navigator.pop(context);
+                                    Navigator.pop(context);
+                                  },
+                                  context: context,
+                                  type: CoolAlertType.success,
+                                  text: "Your review was posted successfully!",
+                                );
+                              });
+                            });
+                          }
+                        });
+                      });
+                    }
                   },
                   child: Center(
                     child: Text(

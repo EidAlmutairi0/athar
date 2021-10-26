@@ -167,7 +167,7 @@ class PlaceCard extends StatelessWidget {
                             ? Row(
                                 children: [
                                   Text(
-                                    PlaceTotalRate.toString(),
+                                    PlaceTotalRate.toStringAsFixed(1),
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontFamily: 'RocknRollOne',

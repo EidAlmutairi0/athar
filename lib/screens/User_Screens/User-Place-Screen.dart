@@ -194,7 +194,8 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                   ? Row(
                                       children: [
                                         Text(
-                                          widget.PlaceTotalRate.toString(),
+                                          widget.PlaceTotalRate.toStringAsFixed(
+                                              1),
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontFamily: 'RocknRollOne',

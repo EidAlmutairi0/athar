@@ -195,7 +195,8 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                   ? Row(
                                       children: [
                                         Text(
-                                          widget.PlaceTotalRate.toString(),
+                                          widget.PlaceTotalRate.toStringAsFixed(
+                                              1),
                                           style: TextStyle(
                                             color: Colors.black,
                                             fontFamily: 'RocknRollOne',

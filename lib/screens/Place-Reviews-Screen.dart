@@ -5,7 +5,12 @@ import 'package:smooth_star_rating/smooth_star_rating.dart';
 
 import '/globals.dart' as globals;
 
-class PlaceReviewsScreen extends StatelessWidget {
+class PlaceReviewsScreen extends StatefulWidget {
+  @override
+  State<PlaceReviewsScreen> createState() => _PlaceReviewsScreenState();
+}
+
+class _PlaceReviewsScreenState extends State<PlaceReviewsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,11 +73,8 @@ class PlaceReviewsScreen extends StatelessWidget {
               List<Review> reviews = [];
               for (var review in data) {
                 reviews.add(
-                  Review(
-                    review.get('username'),
-                    review.get('review'),
-                    review.get('rate'),
-                  ),
+                  Review(review.get('username'), review.get('review'),
+                      review.get('rate'), review.get('Date')),
                 );
               }
 
@@ -97,10 +99,12 @@ class Review extends StatelessWidget {
   String tname;
   String text;
   double rate;
-  Review(String name, String text, double rate) {
+  var date;
+  Review(String name, String text, double rate, var date) {
     this.text = text;
     this.rate = rate;
     tname = name;
+    this.date = date;
   }
 
   @override
@@ -124,43 +128,61 @@ class Review extends StatelessWidget {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Column(
+            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CircleAvatar(
-                    child: Icon(
-                      Icons.person_outline_outlined,
-                      size: 30,
-                      color: Colors.white54,
-                    ),
-                    radius: 25,
-                    backgroundColor: Colors.grey,
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Column(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        tname,
-                        style:
-                            TextStyle(fontFamily: 'RocknRollOne', fontSize: 16),
+                      CircleAvatar(
+                        child: Icon(
+                          Icons.person_outline_outlined,
+                          size: 30,
+                          color: Colors.white54,
+                        ),
+                        radius: 25,
+                        backgroundColor: Colors.grey,
                       ),
                       SizedBox(
-                        height: 5,
+                        width: 15,
                       ),
-                      SmoothStarRating(
-                          isReadOnly: true,
-                          starCount: 5,
-                          rating: rate,
-                          size: 20,
-                          color: Colors.yellow.shade700,
-                          borderColor: Colors.yellow.shade700,
-                          spacing: 0.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tname,
+                            style: TextStyle(
+                                fontFamily: 'RocknRollOne', fontSize: 16),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          SmoothStarRating(
+                              isReadOnly: true,
+                              starCount: 5,
+                              rating: rate,
+                              size: 20,
+                              color: Colors.yellow.shade700,
+                              borderColor: Colors.yellow.shade700,
+                              spacing: 0.0),
+                        ],
+                      ),
                     ],
-                  )
+                  ),
+                  Expanded(
+                    child: Container(
+                      height: 50,
+                      alignment: Alignment.bottomRight,
+                      child: Text(
+                        date,
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    ),
+                  ),
                 ],
               ),
               Divider(),

@@ -3,6 +3,7 @@ import '/providers/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/Widgets/PlaceCard2.dart';
 import 'SubscribedPlaces-Screen.dart';
+import '../MyReviews-Screen.dart';
 
 class TourGuideProfileScreen extends StatefulWidget {
   @override
@@ -83,9 +84,12 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                   child: Stack(
                     children: [
                       CircleAvatar(
-
+                        child: Image.asset(
+                          'assets/images/userDefultAvatar.png',
+                          width: 70,
+                          color: Colors.white,
+                        ),
                         radius: 50,
-                        backgroundImage: AssetImage('assets/images/eid.jpg'),
                         backgroundColor: Colors.grey,
                       ),
                       Positioned(
@@ -294,7 +298,13 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyReviewsScreen()),
+                      );
+                    },
                     child: Icon(
                       Icons.arrow_forward_ios_sharp,
                       color: Colors.grey,
