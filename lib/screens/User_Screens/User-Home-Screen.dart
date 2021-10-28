@@ -176,9 +176,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   void initState() {
     getPlaces();
     getLikedPlaces();
-    print('start');
-    Timer(Duration(seconds: 2), () {
-      print('end');
+    Timer(Duration(milliseconds: 1000), () {
       setState(() {
         wating = true;
       });

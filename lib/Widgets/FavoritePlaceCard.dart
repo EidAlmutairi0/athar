@@ -7,45 +7,31 @@ import 'package:athar/screens/TourGuide_Screens/TourGuide-Place-Screen.dart';
 import 'package:athar/providers/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class PlaceCard extends StatefulWidget {
+class FavoritePlaceCard extends StatefulWidget {
   String PlaceName;
+  String image;
   double PlaceTotalRate;
   String Location;
   String aboutThePlace;
   String openingHours;
   String tekPrice;
   String webSite;
-
   List images;
   double placeLatitude;
   double placeLongitude;
   double dis;
   bool isLiked;
   @override
-  PlaceCard(name, PlaceTotalRate, Location, aboutThePlace, openingHours,
-      tekPrice, webSite, List images, latitude, longitude, bool isLiked) {
+  FavoritePlaceCard(name, image) {
     PlaceName = name;
-    this.PlaceTotalRate = PlaceTotalRate;
-    this.Location = Location;
-    this.aboutThePlace = aboutThePlace;
-    this.openingHours = openingHours;
-    this.tekPrice = tekPrice;
-    this.webSite = webSite;
-
-    this.images = images;
-    placeLatitude = latitude;
-    placeLongitude = longitude;
-    dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
-            placeLatitude, placeLongitude)) /
-        1000;
-    this.isLiked = isLiked;
+    this.image = image;
   }
 
   @override
-  State<PlaceCard> createState() => _PlaceCardState();
+  _FavoritePlaceCardState createState() => _FavoritePlaceCardState();
 }
 
-class _PlaceCardState extends State<PlaceCard> {
+class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
   var loc = Geolocator();
 
   PlaceLiked(bool isLike) {
@@ -102,14 +88,6 @@ class _PlaceCardState extends State<PlaceCard> {
         return false;
       }
     }
-  }
-
-  Widget likeIcon(bool x) {
-    return Icon(
-      Icons.favorite,
-      color: x ? Colors.redAccent : Colors.grey,
-      size: 25,
-    );
   }
 
   Future<bool> onLikeButtonTapped(bool isLike) async {
@@ -214,11 +192,28 @@ class _PlaceCardState extends State<PlaceCard> {
     return !isLike;
   }
 
-  Widget build(BuildContext context) {
-    widget.dis = (Geolocator.distanceBetween(globals.latitude,
-            globals.longitude, widget.placeLatitude, widget.placeLongitude)) /
-        1000;
+  @override
+  void initState() {
+    FirebaseFirestore.instance
+        .collection('places')
+        .doc(widget.PlaceName)
+        .get()
+        .then((value) {
+      widget.PlaceTotalRate = value.get('PlaceTotalRate');
+      widget.Location = value.get('Location');
+      widget.aboutThePlace = value.get('aboutThePlace');
+      widget.openingHours = value.get('openingHours');
+      widget.tekPrice = value.get('tekPrice');
+      widget.webSite = value.get('webSite');
+      widget.images = value.get('images');
+      widget.placeLatitude = value.get('latitude');
+      widget.placeLongitude = value.get('longitude');
+    });
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Card(
       elevation: 9,
       margin: EdgeInsets.fromLTRB(0.0, 0, 0.0, 30),

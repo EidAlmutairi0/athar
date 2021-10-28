@@ -292,10 +292,43 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                             builder: (context) => MyReviewsScreen()),
                       );
                     },
-                    child: Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      color: Colors.grey,
-                      size: 16,
+                    child: Row(
+                      children: [
+                        StreamBuilder<QuerySnapshot>(
+                            stream: (Authentication.TourGuide)
+                                ? FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc('tourGuides')
+                                    .collection('tourGuides')
+                                    .doc("${Authentication.currntUsername}")
+                                    .collection('reviews')
+                                    .snapshots()
+                                : FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc('normalUsers')
+                                    .collection('normalUsers')
+                                    .doc("${Authentication.currntUsername}")
+                                    .collection('reviews')
+                                    .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text('');
+                              }
+                              return Text(
+                                snapshot.data.size.toString(),
+                                style: TextStyle(fontSize: 16),
+                              );
+                            }),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_sharp,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                      ],
                     ),
                   ),
                 ],

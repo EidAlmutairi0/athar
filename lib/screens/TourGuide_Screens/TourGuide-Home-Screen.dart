@@ -143,9 +143,9 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
   String sortBy = 'Distance';
   List<String> sortByList = ['Distance', 'Rating'];
   List likedPlaces = [];
-  getLikedPlaces() {
+  getLikedPlaces() async {
     if (Authentication.TourGuide == true) {
-      FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection('users')
           .doc('tourGuides')
           .collection('tourGuides')
@@ -153,10 +153,12 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
           .collection('FavoritePlaces')
           .get()
           .then((value) {
-        if (value.docs.isNotEmpty) likedPlaces = value.docs;
+        setState(() {
+          likedPlaces = value.docs.map((doc) => doc.id).toList();
+        });
       });
     } else {
-      FirebaseFirestore.instance
+      await FirebaseFirestore.instance
           .collection('users')
           .doc('normalUsers')
           .collection('normalUsers')
@@ -164,7 +166,9 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
           .collection('FavoritePlaces')
           .get()
           .then((value) {
-        if (value.docs.isNotEmpty) likedPlaces = value.docs;
+        setState(() {
+          likedPlaces = value.docs.map((doc) => doc.id).toList();
+        });
       });
     }
   }
