@@ -8,6 +8,9 @@ import 'package:athar/Widgets/PlaceCard.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:provider/provider.dart';
+import 'dart:async';
+import 'package:athar/providers/FavoritePlaceProvider.dart';
 
 class UserHomeScreen extends StatefulWidget {
   @override
@@ -17,10 +20,41 @@ class UserHomeScreen extends StatefulWidget {
 class _UserHomeScreenState extends State<UserHomeScreen> {
   final auth = Authentication();
   @override
+  bool wating = false;
   String region = 'All';
   List<String> regionsList = ['All', 'Riyadh', 'Mecca', 'Eastern'];
   String sortBy = 'Distance';
   List<String> sortByList = ['Distance', 'Rating'];
+  List likedPlaces = [];
+  getLikedPlaces() async {
+    if (Authentication.TourGuide == true) {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc('tourGuides')
+          .collection('tourGuides')
+          .doc(Authentication.currntUsername)
+          .collection('FavoritePlaces')
+          .get()
+          .then((value) {
+        setState(() {
+          likedPlaces = value.docs.map((doc) => doc.id).toList();
+        });
+      });
+    } else {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc('normalUsers')
+          .collection('normalUsers')
+          .doc(Authentication.currntUsername)
+          .collection('FavoritePlaces')
+          .get()
+          .then((value) {
+        setState(() {
+          likedPlaces = value.docs.map((doc) => doc.id).toList();
+        });
+      });
+    }
+  }
 
   Future getPlaces() async {
     var dataBase =
@@ -141,6 +175,14 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
 
   void initState() {
     getPlaces();
+    getLikedPlaces();
+    print('start');
+    Timer(Duration(seconds: 2), () {
+      print('end');
+      setState(() {
+        wating = true;
+      });
+    });
     super.initState();
   }
 
@@ -215,140 +257,156 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
               ),
             ),
             Center(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: (sortBy == "Distance")
-                    ? StreamBuilder<QuerySnapshot>(
-                        stream: (region == 'All')
-                            ? FirebaseFirestore.instance
-                                .collection('places')
-                                .snapshots()
-                            : FirebaseFirestore.instance
-                                .collection('places')
-                                .where('region', isEqualTo: region)
-                                .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text('Something went wrong'),
-                            );
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 100),
-                                child: CircularProgressIndicator(
-                                  color: Color(0xFFF2945E),
-                                ),
-                              ),
-                            );
-                          }
-                          if (snapshot.requireData.docs.isEmpty) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 100),
-                              child: Center(
-                                child: Text(
-                                  "There is no places in this region",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
+              child: (wating)
+                  ? Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: (sortBy == "Distance")
+                          ? StreamBuilder<QuerySnapshot>(
+                              stream: (region == 'All')
+                                  ? FirebaseFirestore.instance
+                                      .collection('places')
+                                      .snapshots()
+                                  : FirebaseFirestore.instance
+                                      .collection('places')
+                                      .where('region', isEqualTo: region)
+                                      .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Something went wrong'),
+                                  );
+                                }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 100),
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFFF2945E),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                if (snapshot.requireData.docs.isEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 100),
+                                    child: Center(
+                                      child: Text(
+                                        "There is no places in this region",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
 
-                          final data = snapshot.data.docs;
-                          List<PlaceCard> PlacesList = [];
-                          for (var plac in data) {
-                            PlacesList.add(
-                              PlaceCard(
-                                  plac.get('name'),
-                                  plac.get('PlaceTotalRate'),
-                                  plac.get('Location'),
-                                  plac.get('aboutThePlace'),
-                                  plac.get('openingHours'),
-                                  plac.get('tekPrice'),
-                                  plac.get('webSite'),
-                                  plac.get("images"),
-                                  plac.get('latitude'),
-                                  plac.get('longitude')),
-                            );
-                          }
-                          PlacesList.sort((a, b) => a.dis.compareTo(b.dis));
-                          return Column(
-                            children: PlacesList,
-                          );
-                        },
-                      )
-                    : StreamBuilder<QuerySnapshot>(
-                        stream: (region == 'All')
-                            ? FirebaseFirestore.instance
-                                .collection('places')
-                                .snapshots()
-                            : FirebaseFirestore.instance
-                                .collection('places')
-                                .where('region', isEqualTo: region)
-                                .snapshots(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text('Something went wrong'),
-                            );
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.only(top: 100),
-                                child: CircularProgressIndicator(
-                                  color: Color(0xFFF2945E),
-                                ),
-                              ),
-                            );
-                          }
-                          if (snapshot.requireData.docs.isEmpty) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 100),
-                              child: Center(
-                                child: Text(
-                                  "There is no places in this region",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
+                                final data = snapshot.data.docs;
+                                List<PlaceCard> PlacesList = [];
+                                for (var plac in data) {
+                                  PlacesList.add(
+                                    PlaceCard(
+                                        plac.get('name'),
+                                        plac.get('PlaceTotalRate'),
+                                        plac.get('Location'),
+                                        plac.get('aboutThePlace'),
+                                        plac.get('openingHours'),
+                                        plac.get('tekPrice'),
+                                        plac.get('webSite'),
+                                        plac.get("images"),
+                                        plac.get('latitude'),
+                                        plac.get('longitude'),
+                                        likedPlaces.contains(plac.get('name'))),
+                                  );
+                                }
+                                PlacesList.sort(
+                                    (a, b) => a.dis.compareTo(b.dis));
+                                return Column(
+                                  children: PlacesList,
+                                );
+                              },
+                            )
+                          : StreamBuilder<QuerySnapshot>(
+                              stream: (region == 'All')
+                                  ? FirebaseFirestore.instance
+                                      .collection('places')
+                                      .snapshots()
+                                  : FirebaseFirestore.instance
+                                      .collection('places')
+                                      .where('region', isEqualTo: region)
+                                      .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasError) {
+                                  return Center(
+                                    child: Text('Something went wrong'),
+                                  );
+                                }
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top: 100),
+                                      child: CircularProgressIndicator(
+                                        color: Color(0xFFF2945E),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                if (snapshot.requireData.docs.isEmpty) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 100),
+                                    child: Center(
+                                      child: Text(
+                                        "There is no places in this region",
+                                        style: TextStyle(
+                                          fontSize: 20,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
 
-                          final data = snapshot.data.docs;
-                          List<PlaceCard> PlacesList = [];
-                          for (var plac in data) {
-                            PlacesList.add(
-                              PlaceCard(
-                                  plac.get('name'),
-                                  plac.get('PlaceTotalRate'),
-                                  plac.get('Location'),
-                                  plac.get('aboutThePlace'),
-                                  plac.get('openingHours'),
-                                  plac.get('tekPrice'),
-                                  plac.get('webSite'),
-                                  plac.get("images"),
-                                  plac.get('latitude'),
-                                  plac.get('longitude')),
-                            );
-                          }
-                          PlacesList.sort((a, b) =>
-                              a.PlaceTotalRate.compareTo(b.PlaceTotalRate));
+                                final data = snapshot.data.docs;
+                                List<PlaceCard> PlacesList = [];
+                                for (var plac in data) {
+                                  PlacesList.add(
+                                    PlaceCard(
+                                        plac.get('name'),
+                                        plac.get('PlaceTotalRate'),
+                                        plac.get('Location'),
+                                        plac.get('aboutThePlace'),
+                                        plac.get('openingHours'),
+                                        plac.get('tekPrice'),
+                                        plac.get('webSite'),
+                                        plac.get("images"),
+                                        plac.get('latitude'),
+                                        plac.get('longitude'),
+                                        likedPlaces.contains(plac.get('name'))),
+                                  );
+                                }
+                                PlacesList.sort((a, b) =>
+                                    a.PlaceTotalRate.compareTo(
+                                        b.PlaceTotalRate));
 
-                          return Column(
-                            children: PlacesList.reversed.toList(),
-                          );
-                        },
+                                return Column(
+                                  children: PlacesList.reversed.toList(),
+                                );
+                              },
+                            ),
+                    )
+                  : Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 100),
+                          child: CircularProgressIndicator(
+                            color: Color(0xFFF2945E),
+                          ),
+                        ),
                       ),
-              ),
+                    ),
             ),
           ],
         ),

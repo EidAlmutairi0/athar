@@ -8,6 +8,7 @@ import 'package:athar/Widgets/PlaceCard.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
 
 class TourGuideHomeScreen extends StatefulWidget {
   @override
@@ -135,12 +136,47 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
 
   final auth = Authentication();
   @override
+  bool wating = false;
+
   String region = 'All';
   List<String> regionsList = ['All', 'Riyadh', 'Mecca', 'Eastern'];
   String sortBy = 'Distance';
   List<String> sortByList = ['Distance', 'Rating'];
+  List likedPlaces = [];
+  getLikedPlaces() {
+    if (Authentication.TourGuide == true) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('tourGuides')
+          .collection('tourGuides')
+          .doc(Authentication.currntUsername)
+          .collection('FavoritePlaces')
+          .get()
+          .then((value) {
+        if (value.docs.isNotEmpty) likedPlaces = value.docs;
+      });
+    } else {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc('normalUsers')
+          .collection('normalUsers')
+          .doc(Authentication.currntUsername)
+          .collection('FavoritePlaces')
+          .get()
+          .then((value) {
+        if (value.docs.isNotEmpty) likedPlaces = value.docs;
+      });
+    }
+  }
+
   void initState() {
     getPlaces();
+    getLikedPlaces();
+    Timer(Duration(seconds: 1), () {
+      setState(() {
+        wating = true;
+      });
+    });
     super.initState();
   }
 
@@ -276,7 +312,8 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
                                   plac.get('webSite'),
                                   plac.get("images"),
                                   plac.get('latitude'),
-                                  plac.get('longitude')),
+                                  plac.get('longitude'),
+                                  likedPlaces.contains(plac.get('name'))),
                             );
                           }
                           PlacesList.sort((a, b) => a.dis.compareTo(b.dis));
@@ -346,7 +383,8 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
                                   plac.get('webSite'),
                                   plac.get("images"),
                                   plac.get('latitude'),
-                                  plac.get('longitude')),
+                                  plac.get('longitude'),
+                                  likedPlaces.contains(plac.get('name'))),
                             );
                           }
                           PlacesList.sort((a, b) =>

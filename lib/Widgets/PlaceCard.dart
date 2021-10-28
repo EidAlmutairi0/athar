@@ -5,10 +5,11 @@ import '/globals.dart' as globals;
 import 'package:athar/screens/User_Screens/User-Place-Screen.dart';
 import 'package:athar/screens/TourGuide_Screens/TourGuide-Place-Screen.dart';
 import 'package:athar/providers/auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:athar/providers/FavoritePlaceProvider.dart';
 
-class PlaceCard extends StatelessWidget {
-  var loc = Geolocator();
-  // ignore: non_constant_identifier_names
+class PlaceCard extends StatefulWidget {
   String PlaceName;
   double PlaceTotalRate;
   String Location;
@@ -18,14 +19,13 @@ class PlaceCard extends StatelessWidget {
   String webSite;
 
   List images;
-  Image VRimage;
   double placeLatitude;
   double placeLongitude;
   double dis;
-
+  bool isLiked;
   @override
   PlaceCard(name, PlaceTotalRate, Location, aboutThePlace, openingHours,
-      tekPrice, webSite, List images, latitude, longitude) {
+      tekPrice, webSite, List images, latitude, longitude, bool isLiked) {
     PlaceName = name;
     this.PlaceTotalRate = PlaceTotalRate;
     this.Location = Location;
@@ -40,12 +40,240 @@ class PlaceCard extends StatelessWidget {
     dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
             placeLatitude, placeLongitude)) /
         1000;
+    this.isLiked = isLiked;
+  }
+
+  @override
+  State<PlaceCard> createState() => _PlaceCardState();
+}
+
+class _PlaceCardState extends State<PlaceCard> {
+  var loc = Geolocator();
+
+  Image VRimage;
+
+  PlaceLiked(bool isLike) {
+    if (isLike) {
+      if (Authentication.TourGuide == true) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc('tourGuides')
+            .collection('tourGuides')
+            .doc(Authentication.currntUsername)
+            .collection('FavoritePlaces')
+            .doc(widget.PlaceName)
+            .set({
+          'PlaceName': widget.PlaceName,
+          'image': widget.images[0],
+        });
+        return true;
+      } else {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc('normalUsers')
+            .collection('normalUsers')
+            .doc(Authentication.currntUsername)
+            .collection('FavoritePlaces')
+            .doc(widget.PlaceName)
+            .set({
+          'PlaceName': widget.PlaceName,
+          'image': widget.images[0],
+        });
+        return true;
+      }
+    } else {
+      if (Authentication.TourGuide == true) {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc('tourGuides')
+            .collection('tourGuides')
+            .doc(Authentication.currntUsername)
+            .collection('FavoritePlaces')
+            .doc(widget.PlaceName)
+            .delete();
+
+        return false;
+      } else {
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc('normalUsers')
+            .collection('normalUsers')
+            .doc(Authentication.currntUsername)
+            .collection('FavoritePlaces')
+            .doc(widget.PlaceName)
+            .delete();
+
+        return false;
+      }
+    }
+  }
+
+  Widget likeIcon(bool x) {
+    return Icon(
+      Icons.favorite,
+      color: x ? Colors.redAccent : Colors.grey,
+      size: 25,
+    );
+  }
+
+  Future<bool> onLikeButtonTapped(bool isLike) async {
+    if (!widget.isLiked) {
+      if (!isLike) {
+        if (Authentication.TourGuide == true) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('tourGuides')
+              .collection('tourGuides')
+              .doc(Authentication.currntUsername)
+              .collection('FavoritePlaces')
+              .doc(widget.PlaceName)
+              .set({
+            'PlaceName': widget.PlaceName,
+            'image': widget.images[0],
+          });
+        } else {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('normalUsers')
+              .collection('normalUsers')
+              .doc(Authentication.currntUsername)
+              .collection('FavoritePlaces')
+              .doc(widget.PlaceName)
+              .set({
+            'PlaceName': widget.PlaceName,
+            'image': widget.images[0],
+          });
+        }
+      } else {
+        if (Authentication.TourGuide == true) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('tourGuides')
+              .collection('tourGuides')
+              .doc(Authentication.currntUsername)
+              .collection('FavoritePlaces')
+              .doc(widget.PlaceName)
+              .delete();
+        } else {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('normalUsers')
+              .collection('normalUsers')
+              .doc(Authentication.currntUsername)
+              .collection('FavoritePlaces')
+              .doc(widget.PlaceName)
+              .delete();
+        }
+      }
+      return !isLike;
+    } else {
+      if (isLike) {
+        if (Authentication.TourGuide == true) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('tourGuides')
+              .collection('tourGuides')
+              .doc(Authentication.currntUsername)
+              .collection('FavoritePlaces')
+              .doc(widget.PlaceName)
+              .set({
+            'PlaceName': widget.PlaceName,
+            'image': widget.images[0],
+          });
+        } else {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('normalUsers')
+              .collection('normalUsers')
+              .doc(Authentication.currntUsername)
+              .collection('FavoritePlaces')
+              .doc(widget.PlaceName)
+              .set({
+            'PlaceName': widget.PlaceName,
+            'image': widget.images[0],
+          });
+        }
+      } else {
+        if (Authentication.TourGuide == true) {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('tourGuides')
+              .collection('tourGuides')
+              .doc(Authentication.currntUsername)
+              .collection('FavoritePlaces')
+              .doc(widget.PlaceName)
+              .delete();
+        } else {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc('normalUsers')
+              .collection('normalUsers')
+              .doc(Authentication.currntUsername)
+              .collection('FavoritePlaces')
+              .doc(widget.PlaceName)
+              .delete();
+        }
+      }
+      return isLike;
+    }
+  }
+
+  Future<bool> onLikeButtonTapped2(bool isLike) async {
+    if (isLike) {
+      if (Authentication.TourGuide == true) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc('tourGuides')
+            .collection('tourGuides')
+            .doc(Authentication.currntUsername)
+            .collection('FavoritePlaces')
+            .doc(widget.PlaceName)
+            .set({
+          'PlaceName': widget.PlaceName,
+          'image': widget.images[0],
+        });
+      } else {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc('normalUsers')
+            .collection('normalUsers')
+            .doc(Authentication.currntUsername)
+            .collection('FavoritePlaces')
+            .doc(widget.PlaceName)
+            .set({
+          'PlaceName': widget.PlaceName,
+          'image': widget.images[0],
+        });
+      }
+    } else {
+      if (Authentication.TourGuide == true) {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc('tourGuides')
+            .collection('tourGuides')
+            .doc(Authentication.currntUsername)
+            .collection('FavoritePlaces')
+            .doc(widget.PlaceName)
+            .delete();
+      } else {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc('normalUsers')
+            .collection('normalUsers')
+            .doc(Authentication.currntUsername)
+            .collection('FavoritePlaces')
+            .doc(widget.PlaceName)
+            .delete();
+      }
+    }
+    return !isLike;
   }
 
   Widget build(BuildContext context) {
-    dis = (Geolocator.distanceBetween(globals.latitude, globals.longitude,
-            placeLatitude, placeLongitude)) /
+    widget.dis = (Geolocator.distanceBetween(globals.latitude,
+            globals.longitude, widget.placeLatitude, widget.placeLongitude)) /
         1000;
+
     return Card(
       elevation: 9,
       margin: EdgeInsets.fromLTRB(0.0, 0, 0.0, 30),
@@ -55,23 +283,23 @@ class PlaceCard extends StatelessWidget {
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
         onTap: () {
-          globals.currentPlace = PlaceName;
+          globals.currentPlace = widget.PlaceName;
           print(globals.currentPlace);
           if (Authentication.TourGuide)
             Navigator.push(
               context,
               MaterialPageRoute(
                   builder: (context) => TourguidePlaceScreen(
-                        PlaceName,
-                        this.PlaceTotalRate,
-                        this.Location,
-                        this.aboutThePlace,
-                        this.openingHours,
-                        this.tekPrice,
-                        this.webSite,
-                        this.images,
-                        placeLatitude,
-                        placeLongitude,
+                        widget.PlaceName,
+                        this.widget.PlaceTotalRate,
+                        this.widget.Location,
+                        this.widget.aboutThePlace,
+                        this.widget.openingHours,
+                        this.widget.tekPrice,
+                        this.widget.webSite,
+                        this.widget.images,
+                        widget.placeLatitude,
+                        widget.placeLongitude,
                       )),
             );
           else
@@ -79,16 +307,16 @@ class PlaceCard extends StatelessWidget {
               context,
               MaterialPageRoute(
                   builder: (context) => UserPlaceScreen(
-                        PlaceName,
-                        this.PlaceTotalRate,
-                        this.Location,
-                        this.aboutThePlace,
-                        this.openingHours,
-                        this.tekPrice,
-                        this.webSite,
-                        this.images,
-                        placeLatitude,
-                        placeLongitude,
+                        widget.PlaceName,
+                        this.widget.PlaceTotalRate,
+                        this.widget.Location,
+                        this.widget.aboutThePlace,
+                        this.widget.openingHours,
+                        this.widget.tekPrice,
+                        this.widget.webSite,
+                        this.widget.images,
+                        widget.placeLatitude,
+                        widget.placeLongitude,
                       )),
             );
         },
@@ -117,7 +345,8 @@ class PlaceCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(100)),
                     child: Center(
                       child: LikeButton(
-                        likeBuilder: (bool isLiked) {
+                        onTap: onLikeButtonTapped,
+                        likeBuilder: (isLiked) {
                           return Icon(
                             Icons.favorite,
                             color: isLiked ? Colors.redAccent : Colors.grey,
@@ -143,7 +372,7 @@ class PlaceCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
-                      PlaceName,
+                      widget.PlaceName,
                       style: TextStyle(
                         color: Colors.black,
                         fontFamily: 'RocknRollOne',
@@ -156,18 +385,18 @@ class PlaceCard extends StatelessWidget {
                         (globals.longitude == 5 && globals.latitude == 5)
                             ? Container()
                             : Text(
-                                "${dis.toStringAsFixed(1)}km",
+                                "${widget.dis.toStringAsFixed(1)}km",
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontFamily: 'RocknRollOne',
                                   fontSize: 12,
                                 ),
                               ),
-                        (PlaceTotalRate != 0.1)
+                        (widget.PlaceTotalRate != 0.1)
                             ? Row(
                                 children: [
                                   Text(
-                                    PlaceTotalRate.toStringAsFixed(1),
+                                    widget.PlaceTotalRate.toStringAsFixed(1),
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontFamily: 'RocknRollOne',
@@ -191,7 +420,7 @@ class PlaceCard extends StatelessWidget {
                 ),
               ),
               child: Image.network(
-                images[0],
+                widget.images[0],
                 fit: BoxFit.cover,
               ),
             ),

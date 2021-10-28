@@ -70,7 +70,7 @@ class _MyReviewsScreenState extends State<MyReviewsScreen> {
                   padding: const EdgeInsets.only(top: 50),
                   child: Center(
                     child: Text(
-                      "There is no reviews for this place",
+                      "You have no reviews",
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,

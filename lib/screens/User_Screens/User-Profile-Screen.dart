@@ -3,6 +3,7 @@ import '/providers/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/Widgets/PlaceCard2.dart';
 import 'VisitedPlaces-Screen.dart';
+import '../MyReviews-Screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   @override
@@ -284,7 +285,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyReviewsScreen()),
+                      );
+                    },
                     child: Icon(
                       Icons.arrow_forward_ios_sharp,
                       color: Colors.grey,
