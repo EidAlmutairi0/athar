@@ -5,6 +5,8 @@ import 'package:athar/Widgets/PlaceCard2.dart';
 import 'VisitedPlaces-Screen.dart';
 import '../MyReviews-Screen.dart';
 import '../MyFavoritePlaces.dart';
+import '../Followers-Screen.dart';
+import 'package:athar/Widgets/FollowerCard.dart';
 
 class UserProfileScreen extends StatefulWidget {
   @override
@@ -15,6 +17,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   final auth = Authentication();
   final dataBase = FirebaseFirestore.instance;
   List<PlaceCard2> PlacesList2 = [];
+  List<FollowerCard> followers = [];
+  List<FollowerCard> followings = [];
 
   List<String> accountPrivacy = ['Public', "Private"];
   List<String> languages = ['English', "Arabic"];
@@ -24,6 +28,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   @override
   @override
   Widget build(BuildContext context) {
+    List<FollowerCard> followers = [];
+
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -118,15 +124,59 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FollowersScreen(followers)),
+                    );
+                  },
                   child: Column(
                     children: <Widget>[
-                      Text(
-                        '89',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w700),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc('normalUsers')
+                            .collection('normalUsers')
+                            .doc("${Authentication.currntUsername}")
+                            .collection('Followers')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text(
+                              '0',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                          if (snapshot.hasError) {
+                            return Text(
+                              '0',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                          var fllo = snapshot.data.docs;
+                          List<FollowerCard> ff = [];
+
+                          for (var follor in fllo) {
+                            ff.add(FollowerCard(follor.id, true));
+                          }
+                          followers = ff;
+
+                          return Text(
+                            snapshot.data.size.toString(),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w700),
+                          );
+                        },
                       ),
                       Text(
                         'followers',
