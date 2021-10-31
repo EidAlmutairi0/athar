@@ -20,7 +20,7 @@ class FavoritePlaceCard extends StatefulWidget {
   double placeLatitude;
   double placeLongitude;
   double dis;
-  bool isLiked;
+  bool isLiked = true;
   @override
   FavoritePlaceCard(name, image) {
     PlaceName = name;
@@ -90,61 +90,10 @@ class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
     }
   }
 
-  Future<bool> onLikeButtonTapped(bool isLike) async {
-    if (!isLike) {
-      if (Authentication.TourGuide == true) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc('tourGuides')
-            .collection('tourGuides')
-            .doc(Authentication.currntUsername)
-            .collection('FavoritePlaces')
-            .doc(widget.PlaceName)
-            .set({
-          'PlaceName': widget.PlaceName,
-          'image': widget.images[0],
-        });
-      } else {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc('normalUsers')
-            .collection('normalUsers')
-            .doc(Authentication.currntUsername)
-            .collection('FavoritePlaces')
-            .doc(widget.PlaceName)
-            .set({
-          'PlaceName': widget.PlaceName,
-          'image': widget.images[0],
-        });
-      }
-    } else {
-      if (Authentication.TourGuide == true) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc('tourGuides')
-            .collection('tourGuides')
-            .doc(Authentication.currntUsername)
-            .collection('FavoritePlaces')
-            .doc(widget.PlaceName)
-            .delete();
-      } else {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc('normalUsers')
-            .collection('normalUsers')
-            .doc(Authentication.currntUsername)
-            .collection('FavoritePlaces')
-            .doc(widget.PlaceName)
-            .delete();
-      }
-    }
-    return !isLike;
-  }
-
   Future<bool> onLikeButtonTapped2(bool isLike) async {
     if (isLike) {
       if (Authentication.TourGuide == true) {
-        await FirebaseFirestore.instance
+        FirebaseFirestore.instance
             .collection('users')
             .doc('tourGuides')
             .collection('tourGuides')
@@ -156,7 +105,7 @@ class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
           'image': widget.images[0],
         });
       } else {
-        await FirebaseFirestore.instance
+        FirebaseFirestore.instance
             .collection('users')
             .doc('normalUsers')
             .collection('normalUsers')
@@ -170,7 +119,7 @@ class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
       }
     } else {
       if (Authentication.TourGuide == true) {
-        await FirebaseFirestore.instance
+        FirebaseFirestore.instance
             .collection('users')
             .doc('tourGuides')
             .collection('tourGuides')
@@ -179,7 +128,7 @@ class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
             .doc(widget.PlaceName)
             .delete();
       } else {
-        await FirebaseFirestore.instance
+        FirebaseFirestore.instance
             .collection('users')
             .doc('normalUsers')
             .collection('normalUsers')
@@ -194,6 +143,11 @@ class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
 
   @override
   void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     FirebaseFirestore.instance
         .collection('places')
         .doc(widget.PlaceName)
@@ -209,11 +163,6 @@ class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
       widget.placeLatitude = value.get('latitude');
       widget.placeLongitude = value.get('longitude');
     });
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Card(
       elevation: 9,
       margin: EdgeInsets.fromLTRB(0.0, 0, 0.0, 30),
@@ -284,48 +233,18 @@ class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(100)),
                     child: Center(
-                      child: (widget.isLiked)
-                          ? LikeButton(
-                              onTap: onLikeButtonTapped2,
-                              likeBuilder: (isLiked) {
-                                return Icon(
-                                  Icons.favorite,
-                                  color:
-                                      !isLiked ? Colors.redAccent : Colors.grey,
-                                  size: 25,
-                                );
-                              },
-                              likeCountPadding: EdgeInsets.all(0),
-                              size: 25,
-                              circleColor: CircleColor(
-                                  start: Color(0xff00ddff),
-                                  end: Color(0xff0099cc)),
-                              bubblesColor: BubblesColor(
-                                dotPrimaryColor: Color(0xff33b5e5),
-                                dotSecondaryColor: Color(0xff0099cc),
-                              ),
-                            )
-                          : LikeButton(
-                              onTap: onLikeButtonTapped,
-                              likeBuilder: (isLiked) {
-                                return Icon(
-                                  Icons.favorite,
-                                  color:
-                                      isLiked ? Colors.redAccent : Colors.grey,
-                                  size: 25,
-                                );
-                              },
-                              likeCountPadding: EdgeInsets.all(0),
-                              size: 25,
-                              circleColor: CircleColor(
-                                  start: Color(0xff00ddff),
-                                  end: Color(0xff0099cc)),
-                              bubblesColor: BubblesColor(
-                                dotPrimaryColor: Color(0xff33b5e5),
-                                dotSecondaryColor: Color(0xff0099cc),
-                              ),
-                            ),
-                    ),
+                        child: LikeButton(
+                      onTap: onLikeButtonTapped2,
+                      likeBuilder: (isLiked) {
+                        return Icon(
+                          Icons.favorite,
+                          color: Colors.redAccent,
+                          size: 25,
+                        );
+                      },
+                      likeCountPadding: EdgeInsets.all(0),
+                      size: 25,
+                    )),
                   ),
                 ),
               ),
@@ -339,51 +258,14 @@ class _FavoritePlaceCardState extends State<FavoritePlaceCard> {
                       style: TextStyle(
                         color: Colors.black,
                         fontFamily: 'RocknRollOne',
-                        fontSize: 18,
+                        fontSize: 20,
                       ),
                     ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        (globals.longitude == 5 && globals.latitude == 5)
-                            ? Container()
-                            : Text(
-                                "${widget.dis.toStringAsFixed(1)}km",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontFamily: 'RocknRollOne',
-                                  fontSize: 12,
-                                ),
-                              ),
-                        (widget.PlaceTotalRate != 0.1)
-                            ? Row(
-                                children: [
-                                  Text(
-                                    widget.PlaceTotalRate.toStringAsFixed(1),
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontFamily: 'RocknRollOne',
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  SizedBox(
-                                    width: 2,
-                                  ),
-                                  Image.asset(
-                                    "assets/images/star.png",
-                                    width: 15,
-                                    height: 15,
-                                  )
-                                ],
-                              )
-                            : Container()
-                      ],
-                    )
                   ],
                 ),
               ),
               child: Image.network(
-                widget.images[0],
+                widget.image,
                 fit: BoxFit.cover,
               ),
             ),

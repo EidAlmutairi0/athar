@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/Widgets/PlaceCard2.dart';
 import 'SubscribedPlaces-Screen.dart';
 import '../MyReviews-Screen.dart';
+import '../MyFavoritePlaces.dart';
 
 class TourGuideProfileScreen extends StatefulWidget {
   @override
@@ -305,10 +306,43 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                             builder: (context) => MyReviewsScreen()),
                       );
                     },
-                    child: Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      color: Colors.grey,
-                      size: 16,
+                    child: Row(
+                      children: [
+                        StreamBuilder<QuerySnapshot>(
+                            stream: (Authentication.TourGuide)
+                                ? FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc('tourGuides')
+                                    .collection('tourGuides')
+                                    .doc("${Authentication.currntUsername}")
+                                    .collection('reviews')
+                                    .snapshots()
+                                : FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc('normalUsers')
+                                    .collection('normalUsers')
+                                    .doc("${Authentication.currntUsername}")
+                                    .collection('reviews')
+                                    .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text('');
+                              }
+                              return Text(
+                                snapshot.data.size.toString(),
+                                style: TextStyle(fontSize: 16),
+                              );
+                            }),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_sharp,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -329,11 +363,50 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                     ),
                   ),
                   InkWell(
-                    onTap: () {},
-                    child: Icon(
-                      Icons.arrow_forward_ios_sharp,
-                      color: Colors.grey,
-                      size: 16,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyFavoritePlaces()),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        StreamBuilder<QuerySnapshot>(
+                            stream: (Authentication.TourGuide)
+                                ? FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc('tourGuides')
+                                    .collection('tourGuides')
+                                    .doc("${Authentication.currntUsername}")
+                                    .collection('FavoritePlaces')
+                                    .snapshots()
+                                : FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc('normalUsers')
+                                    .collection('normalUsers')
+                                    .doc("${Authentication.currntUsername}")
+                                    .collection('FavoritePlaces')
+                                    .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text('');
+                              }
+                              return Text(
+                                snapshot.data.size.toString(),
+                                style: TextStyle(fontSize: 16),
+                              );
+                            }),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios_sharp,
+                          color: Colors.grey,
+                          size: 16,
+                        ),
+                      ],
                     ),
                   ),
                 ],

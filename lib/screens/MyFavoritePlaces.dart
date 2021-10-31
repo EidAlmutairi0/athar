@@ -12,7 +12,7 @@ class MyFavoritePlaces extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Color(0xFFF2945E),
         centerTitle: true,
-        title: Text('My Reviews'),
+        title: Text('My Favorite Places'),
       ),
       body: SingleChildScrollView(
         child: Center(
@@ -56,7 +56,7 @@ class MyFavoritePlaces extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 50),
                   child: Center(
                     child: Text(
-                      "You have no reviews",
+                      "You have no favorite places",
                       style: TextStyle(
                         fontSize: 20,
                         color: Colors.black,
@@ -79,8 +79,11 @@ class MyFavoritePlaces extends StatelessWidget {
 
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: Column(
-                  children: reviews,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: reviews,
+                  ),
                 ),
               );
               return Center(

@@ -11,11 +11,6 @@ class MyReviewsScreen extends StatefulWidget {
 
 class _MyReviewsScreenState extends State<MyReviewsScreen> {
   @override
-  void initState() {
-    setState(() {});
-    super.initState();
-  }
-
   @override
   @override
   Widget build(BuildContext context) {
