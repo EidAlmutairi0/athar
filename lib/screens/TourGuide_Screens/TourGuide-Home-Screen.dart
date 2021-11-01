@@ -68,28 +68,33 @@ class _TourGuideHomeScreenState extends State<TourGuideHomeScreen> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Container(
-                                          child: Row(
-                                            children: [
-                                              Text(
-                                                value.docs[i]
-                                                    .get('PlaceTotalRate')
-                                                    .toString(),
-                                                style: TextStyle(
-                                                  color: Colors.black,
-                                                  fontFamily: 'RocknRollOne',
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                              SizedBox(
-                                                width: 2,
-                                              ),
-                                              Image.asset(
-                                                "assets/images/star.png",
-                                                width: 18,
-                                                height: 18,
-                                              )
-                                            ],
-                                          ),
+                                          child: (value.docs[i]
+                                                      .get('PlaceTotalRate') !=
+                                                  0.1)
+                                              ? Row(
+                                                  children: [
+                                                    Text(
+                                                      value.docs[i]
+                                                          .get('PlaceTotalRate')
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontFamily:
+                                                            'RocknRollOne',
+                                                        fontSize: 14,
+                                                      ),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 2,
+                                                    ),
+                                                    Image.asset(
+                                                      "assets/images/star.png",
+                                                      width: 18,
+                                                      height: 18,
+                                                    )
+                                                  ],
+                                                )
+                                              : Container(),
                                         ),
                                         SizedBox(
                                           width: 5,

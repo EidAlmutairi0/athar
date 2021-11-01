@@ -1,24 +1,24 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../Widgets/FollowerCard.dart';
 
-class FollowersScreen extends StatefulWidget {
-  List<FollowerCard> followers;
+class FollowingsScreen extends StatefulWidget {
+  List<FollowerCard> followings;
 
-  FollowersScreen(List<FollowerCard> a) {
-    followers = a;
+  FollowingsScreen(List<FollowerCard> a) {
+    followings = a;
   }
+
   @override
-  State<FollowersScreen> createState() => _FollowersScreenState();
+  _FollowingsScreenState createState() => _FollowingsScreenState();
 }
 
-class _FollowersScreenState extends State<FollowersScreen> {
+class _FollowingsScreenState extends State<FollowingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFF2945E),
-        title: Text('Followers'),
+        title: Text('Followings'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -26,7 +26,7 @@ class _FollowersScreenState extends State<FollowersScreen> {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
-            children: widget.followers,
+            children: widget.followings,
           ),
         ),
       ),

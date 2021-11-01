@@ -7,6 +7,7 @@ import '../MyReviews-Screen.dart';
 import '../MyFavoritePlaces.dart';
 import '../Followers-Screen.dart';
 import 'package:athar/Widgets/FollowerCard.dart';
+import '../Followings-Screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   @override
@@ -163,9 +164,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           }
                           var fllo = snapshot.data.docs;
                           List<FollowerCard> ff = [];
-
                           for (var follor in fllo) {
-                            ff.add(FollowerCard(follor.id, true));
+                            var temp = followings.singleWhere(
+                                (element) => element.name == follor.id,
+                                orElse: () => null);
+
+                            ff.add(FollowerCard(follor.id));
                           }
                           followers = ff;
 
@@ -192,15 +196,59 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   width: 40,
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FollowingsScreen(followings)),
+                    );
+                  },
                   child: Column(
                     children: <Widget>[
-                      Text(
-                        '27',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w700),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc('normalUsers')
+                            .collection('normalUsers')
+                            .doc("${Authentication.currntUsername}")
+                            .collection('Followings')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text(
+                              '0',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                          if (snapshot.hasError) {
+                            return Text(
+                              '0',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                          var fllo = snapshot.data.docs;
+                          List<FollowerCard> ff = [];
+
+                          for (var follor in fllo) {
+                            ff.add(FollowerCard(follor.id));
+                          }
+                          followings = ff;
+
+                          return Text(
+                            snapshot.data.size.toString(),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w700),
+                          );
+                        },
                       ),
                       Text(
                         'followings',

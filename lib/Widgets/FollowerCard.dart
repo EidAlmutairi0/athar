@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:athar/providers/FollowerProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/providers/auth.dart';
 
@@ -9,11 +7,11 @@ class FollowerCard extends StatefulWidget {
   Image avatar;
   bool isFollow;
   String type;
+  bool userType;
   var dataBase;
 
-  FollowerCard(String name, bool isFollow) {
+  FollowerCard(String name) {
     this.name = name;
-    this.isFollow = isFollow;
     if (Authentication.TourGuide) type = 'tourGuides';
     type = 'normalUsers';
     dataBase = FirebaseFirestore.instance
@@ -21,8 +19,36 @@ class FollowerCard extends StatefulWidget {
         .doc(type)
         .collection(type)
         .doc("${Authentication.currntUsername}")
-        .collection('Followers')
+        .collection('Followings')
         .get();
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc(type)
+        .collection(type)
+        .doc("${Authentication.currntUsername}")
+        .collection('Followings')
+        .doc(name)
+        .get()
+        .then((value) {
+      if (value.exists)
+        isFollow = true;
+      else {
+        isFollow = false;
+      }
+    });
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('tourGuides')
+        .collection('tourGuides')
+        .doc("$name")
+        .get()
+        .then((value) {
+      if (value.exists)
+        userType = true;
+      else {
+        userType = false;
+      }
+    });
   }
 
   @override
@@ -30,6 +56,7 @@ class FollowerCard extends StatefulWidget {
 }
 
 class _FollowerCardState extends State<FollowerCard> {
+  @override
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -78,7 +105,7 @@ class _FollowerCardState extends State<FollowerCard> {
                               .doc(widget.type)
                               .collection(widget.type)
                               .doc("${Authentication.currntUsername}")
-                              .collection('Followers')
+                              .collection('Followings')
                               .doc(widget.name)
                               .delete();
                           setState(() {
@@ -113,9 +140,11 @@ class _FollowerCardState extends State<FollowerCard> {
                               .doc(widget.type)
                               .collection(widget.type)
                               .doc("${Authentication.currntUsername}")
-                              .collection('Followers')
+                              .collection('Followings')
                               .doc(widget.name)
-                              .set({});
+                              .set({
+                            'isTourGuide': widget.userType,
+                          });
                           setState(() {
                             widget.isFollow = true;
                           });
