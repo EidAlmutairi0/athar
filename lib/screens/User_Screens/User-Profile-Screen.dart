@@ -8,6 +8,7 @@ import '../MyFavoritePlaces.dart';
 import '../Followers-Screen.dart';
 import 'package:athar/Widgets/FollowerCard.dart';
 import '../Followings-Screen.dart';
+import '../Settings-Screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   @override
@@ -35,7 +36,12 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
+            },
             icon: Icon(
               Icons.settings,
               color: Colors.white,

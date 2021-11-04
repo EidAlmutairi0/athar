@@ -5,6 +5,11 @@ import 'package:athar/Widgets/PlaceCard2.dart';
 import 'SubscribedPlaces-Screen.dart';
 import '../MyReviews-Screen.dart';
 import '../MyFavoritePlaces.dart';
+import '../Followers-Screen.dart';
+import '../Settings-Screen.dart';
+
+import 'package:athar/Widgets/FollowerCard.dart';
+import '../Followings-Screen.dart';
 
 class TourGuideProfileScreen extends StatefulWidget {
   @override
@@ -15,6 +20,8 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
   final auth = Authentication();
   final dataBase = FirebaseFirestore.instance;
   List<PlaceCard2> PlacesList2 = [];
+  List<FollowerCard> followers = [];
+  List<FollowerCard> followings = [];
 
   List<String> accountPrivacy = ['Public', "Private"];
   List<String> languages = ['English', "Arabic"];
@@ -28,7 +35,12 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsScreen()),
+              );
+            },
             icon: Icon(
               Icons.settings,
               color: Colors.white,
@@ -135,15 +147,62 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FollowersScreen(followers)),
+                    );
+                  },
                   child: Column(
                     children: <Widget>[
-                      Text(
-                        '89',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w700),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc('tourGuides')
+                            .collection('tourGuides')
+                            .doc("${Authentication.currntUsername}")
+                            .collection('Followers')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text(
+                              '0',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                          if (snapshot.hasError) {
+                            return Text(
+                              '0',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                          var fllo = snapshot.data.docs;
+                          List<FollowerCard> ff = [];
+                          for (var follor in fllo) {
+                            var temp = followings.singleWhere(
+                                (element) => element.name == follor.id,
+                                orElse: () => null);
+
+                            ff.add(FollowerCard(follor.id));
+                          }
+                          followers = ff;
+
+                          return Text(
+                            snapshot.data.size.toString(),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w700),
+                          );
+                        },
                       ),
                       Text(
                         'followers',
@@ -159,15 +218,59 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                   width: 40,
                 ),
                 InkWell(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => FollowingsScreen(followings)),
+                    );
+                  },
                   child: Column(
                     children: <Widget>[
-                      Text(
-                        '27',
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                            fontWeight: FontWeight.w700),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc('tourGuides')
+                            .collection('tourGuides')
+                            .doc("${Authentication.currntUsername}")
+                            .collection('Followings')
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text(
+                              '0',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                          if (snapshot.hasError) {
+                            return Text(
+                              '0',
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w700),
+                            );
+                          }
+                          var fllo = snapshot.data.docs;
+                          List<FollowerCard> ff = [];
+
+                          for (var follor in fllo) {
+                            ff.add(FollowerCard(follor.id));
+                          }
+                          followings = ff;
+
+                          return Text(
+                            snapshot.data.size.toString(),
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey,
+                                fontWeight: FontWeight.w700),
+                          );
+                        },
                       ),
                       Text(
                         'followings',
@@ -192,7 +295,7 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
                         Text(
-                          'Visited Places',
+                          'Subscribed Places',
                           style: TextStyle(
                             fontWeight: FontWeight.w900,
                             fontFamily: 'RocknRollOne',
@@ -419,6 +522,30 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
                   Text(
+                    'Membership',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w900,
+                      fontFamily: 'RocknRollOne',
+                      fontSize: 16,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () {},
+                    child: Text(
+                      'Active',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Divider(),
+            Padding(
+              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(
                     'Language',
                     style: TextStyle(
                       fontWeight: FontWeight.w900,
@@ -445,43 +572,6 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                       });
                     },
                     value: currentLanguage,
-                  ),
-                ],
-              ),
-            ),
-            Divider(),
-            Padding(
-              padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Account Privacy',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'RocknRollOne',
-                      fontSize: 16,
-                    ),
-                  ),
-                  DropdownButton(
-                    alignment: AlignmentDirectional.center,
-                    icon: const Icon(Icons.arrow_downward),
-                    iconSize: 24,
-                    elevation: 16,
-                    underline: Container(
-                      decoration: BoxDecoration(color: Colors.black12),
-                      height: 2,
-                    ),
-                    items: accountPrivacy
-                        .map((String item) => DropdownMenuItem<String>(
-                            child: Text(item), value: item))
-                        .toList(),
-                    onChanged: (String value) {
-                      setState(() {
-                        currentPrivacy = value;
-                      });
-                    },
-                    value: currentPrivacy,
                   ),
                 ],
               ),
