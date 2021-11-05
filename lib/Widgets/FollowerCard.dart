@@ -9,11 +9,17 @@ class FollowerCard extends StatefulWidget {
   String type;
   bool userType;
   var dataBase;
+  bool ist;
 
   FollowerCard(String name) {
     this.name = name;
-    if (Authentication.TourGuide) type = 'tourGuides';
-    type = 'normalUsers';
+    if (Authentication.TourGuide) {
+      type = 'tourGuides';
+      ist = true;
+    } else {
+      type = 'normalUsers';
+      ist = false;
+    }
     dataBase = FirebaseFirestore.instance
         .collection('users')
         .doc(type)
@@ -108,6 +114,25 @@ class _FollowerCardState extends State<FollowerCard> {
                               .collection('Followings')
                               .doc(widget.name)
                               .delete();
+                          if (widget.userType) {
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc('tourGuides')
+                                .collection('tourGuides')
+                                .doc(widget.name)
+                                .collection('Followers')
+                                .doc("${Authentication.currntUsername}")
+                                .delete();
+                          } else {
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc('normalUsers')
+                                .collection('normalUsers')
+                                .doc(widget.name)
+                                .collection('Followers')
+                                .doc("${Authentication.currntUsername}")
+                                .delete();
+                          }
                           setState(() {
                             widget.isFollow = false;
                           });
@@ -145,6 +170,29 @@ class _FollowerCardState extends State<FollowerCard> {
                               .set({
                             'isTourGuide': widget.userType,
                           });
+                          if (widget.userType) {
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc('tourGuides')
+                                .collection('tourGuides')
+                                .doc(widget.name)
+                                .collection('Followers')
+                                .doc("${Authentication.currntUsername}")
+                                .set({
+                              'isTourGuide': widget.ist,
+                            });
+                          } else {
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc('normalUsers')
+                                .collection('normalUsers')
+                                .doc(widget.name)
+                                .collection('Followers')
+                                .doc("${Authentication.currntUsername}")
+                                .set({
+                              'isTourGuide': widget.ist,
+                            });
+                          }
                           setState(() {
                             widget.isFollow = true;
                           });

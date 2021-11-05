@@ -315,61 +315,64 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   ),
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: FutureBuilder<QuerySnapshot>(
-                      future: FirebaseFirestore.instance
-                          .collection('users')
-                          .doc('normalUsers')
-                          .collection('normalUsers')
-                          .doc(Authentication.currntUsername)
-                          .collection('VisitedPlaces')
-                          .get(),
-                      builder: (context, snapshot) {
-                        if (snapshot.hasError) {
-                          return Center(
-                            child: Text('Something went wrong'),
-                          );
-                        }
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.only(top: 60, left: 170),
-                              child: CircularProgressIndicator(
-                                color: Color(0xFFF2945E),
-                              ),
-                            ),
-                          );
-                        }
-                        if (snapshot.requireData.docs.isEmpty) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.only(top: 60),
-                              child: Text(
-                                "You did not visit any place",
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  color: Colors.black,
+                    child: Center(
+                      child: FutureBuilder<QuerySnapshot>(
+                        future: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc('normalUsers')
+                            .collection('normalUsers')
+                            .doc(Authentication.currntUsername)
+                            .collection('VisitedPlaces')
+                            .get(),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Center(
+                              child: Text('Something went wrong'),
+                            );
+                          }
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 60, left: 170),
+                                child: CircularProgressIndicator(
+                                  color: Color(0xFFF2945E),
                                 ),
                               ),
-                            ),
+                            );
+                          }
+                          if (snapshot.requireData.docs.isEmpty) {
+                            return Center(
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(top: 60, left: 20),
+                                child: Text(
+                                  "You did not visit any place",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }
+
+                          final data = snapshot.data.docs;
+                          for (var plac in data) {
+                            PlacesList2.add(
+                                PlaceCard2(plac.id, plac.get('image')));
+                          }
+
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: (PlacesList2.length > 4)
+                                ? PlacesList2.sublist(0, 3)
+                                : PlacesList2,
                           );
-                        }
-
-                        final data = snapshot.data.docs;
-                        for (var plac in data) {
-                          PlacesList2.add(
-                              PlaceCard2(plac.id, plac.get('image')));
-                        }
-
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: (PlacesList2.length > 4)
-                              ? PlacesList2.sublist(0, 3)
-                              : PlacesList2,
-                        );
-                      },
+                        },
+                      ),
                     ),
                   ),
                 ],
