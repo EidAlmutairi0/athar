@@ -82,6 +82,7 @@ class Authentication with ChangeNotifier {
               'email': email,
               'password': password,
               'userName': userName,
+              'name': userName,
               'isTourGuide': true,
               'expiryDate': "2000-01-01"
             });
@@ -103,6 +104,7 @@ class Authentication with ChangeNotifier {
                 .doc('$userName')
                 .set({
               'email': email,
+              'name': userName,
               'password': password,
               'userName': userName,
               'isTourGuide': false,

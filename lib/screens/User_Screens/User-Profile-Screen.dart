@@ -9,6 +9,8 @@ import '../Followers-Screen.dart';
 import 'package:athar/Widgets/FollowerCard.dart';
 import '../Followings-Screen.dart';
 import '../Settings-Screen.dart';
+import 'package:athar/providers/UserInfoProvider.dart';
+import 'package:provider/provider.dart';
 
 class UserProfileScreen extends StatefulWidget {
   @override
@@ -16,6 +18,7 @@ class UserProfileScreen extends StatefulWidget {
 }
 
 class _UserProfileScreenState extends State<UserProfileScreen> {
+  @override
   final auth = Authentication();
   final dataBase = FirebaseFirestore.instance;
   List<PlaceCard2> PlacesList2 = [];
@@ -116,10 +119,24 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             ),
             ListTile(
               title: Center(
-                child: Text(
-                  Authentication.currntUsername,
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
-                ),
+                child: StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc('normalUsers')
+                        .collection('normalUsers')
+                        .doc(Authentication.currntUsername)
+                        .snapshots(),
+                    builder: (BuildContext,
+                        AsyncSnapshot<DocumentSnapshot<Object>> s) {
+                      if (s.connectionState == ConnectionState.waiting) {
+                        return Container();
+                      }
+                      return Text(
+                        s.data.get('name'),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w900, fontSize: 20),
+                      );
+                    }),
               ),
               subtitle:
                   Center(child: Text('@${Authentication.currntUsername}')),

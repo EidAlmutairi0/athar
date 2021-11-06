@@ -132,10 +132,24 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
             ),
             ListTile(
               title: Center(
-                child: Text(
-                  Authentication.currntUsername,
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
-                ),
+                child: FutureBuilder<DocumentSnapshot>(
+                    future: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc('tourGuides')
+                        .collection('tourGuides')
+                        .doc(Authentication.currntUsername)
+                        .get(),
+                    builder: (BuildContext,
+                        AsyncSnapshot<DocumentSnapshot<Object>> s) {
+                      if (s.connectionState == ConnectionState.done) {
+                        return Text(
+                          s.data.get('name'),
+                          style: TextStyle(
+                              fontWeight: FontWeight.w900, fontSize: 20),
+                        );
+                      }
+                      return Container();
+                    }),
               ),
               subtitle:
                   Center(child: Text('@${Authentication.currntUsername}')),

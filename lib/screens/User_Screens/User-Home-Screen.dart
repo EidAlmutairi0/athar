@@ -9,6 +9,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
+import 'package:athar/providers/UserInfoProvider.dart';
 
 class UserHomeScreen extends StatefulWidget {
   @override
@@ -177,6 +178,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   }
 
   void initState() {
+    UserInfoProvider().getUserNickname();
+
     getPlaces();
     getLikedPlaces();
     Timer(Duration(milliseconds: 1000), () {

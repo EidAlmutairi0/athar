@@ -9,6 +9,7 @@ import 'package:athar/screens/TourGuide_Screens/TourGuide-Main-Screen.dart';
 import 'screens/User_Screens/User-Main-Screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'globals.dart' as globals;
+import 'package:athar/providers/UserInfoProvider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,21 +49,26 @@ class _MyAppState extends State<MyApp> {
   @override
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => Authentication(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        routes: {
-          'LoginScreen': (ctx) => LoginScreen(),
-          'SignUpScreen': (ctx) => SignUpScreen(),
-          'TourGuideHomeScreen': (ctx) => TourGuideMainScreen(),
-          'UserHomeScreen': (ctx) => UserMainScreen()
-        },
-        theme: ThemeData(
-          primaryColor: Color(0xFFF2945E),
-        ),
-        home: SplashScreen(),
-      ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => Authentication()),
+        ChangeNotifierProvider(create: (_) => UserInfoProvider()),
+      ],
+      child: Builder(builder: (context) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          routes: {
+            'LoginScreen': (ctx) => LoginScreen(),
+            'SignUpScreen': (ctx) => SignUpScreen(),
+            'TourGuideHomeScreen': (ctx) => TourGuideMainScreen(),
+            'UserHomeScreen': (ctx) => UserMainScreen()
+          },
+          theme: ThemeData(
+            primaryColor: Color(0xFFF2945E),
+          ),
+          home: SplashScreen(),
+        );
+      }),
     );
   }
 }

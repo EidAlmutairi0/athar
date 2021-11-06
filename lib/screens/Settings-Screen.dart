@@ -2,6 +2,7 @@ import 'package:athar/screens/ChangePassword-Screen.dart';
 import 'package:flutter/material.dart';
 import 'ChangeEmail-Screen.dart';
 import 'DeleteAccount-Screen.dart';
+import 'User_Screens/User-editProfile-Screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
@@ -15,7 +16,13 @@ class SettingsScreen extends StatelessWidget {
       body: Column(
         children: [
           InkWell(
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserEditProfileScreen()),
+              );
+            },
             child: Container(
               child: Padding(
                 padding: const EdgeInsets.all(20),
