@@ -9,8 +9,6 @@ import '../Followers-Screen.dart';
 import 'package:athar/Widgets/FollowerCard.dart';
 import '../Followings-Screen.dart';
 import '../Settings-Screen.dart';
-import 'package:athar/providers/UserInfoProvider.dart';
-import 'package:provider/provider.dart';
 
 class UserProfileScreen extends StatefulWidget {
   @override
@@ -90,22 +88,78 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               overflow: Overflow.visible,
               alignment: Alignment.center,
               children: <Widget>[
-                Image.asset(
-                  'assets/images/userDefultHeader.png',
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc('normalUsers')
+                        .collection('normalUsers')
+                        .doc(Authentication.currntUsername)
+                        .snapshots(),
+                    builder: (BuildContext,
+                        AsyncSnapshot<DocumentSnapshot<Object>> s) {
+                      if (s.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          height: 120,
+                        );
+                      } else {
+                        if (s.data.get('header') == "") {
+                          return Image.asset(
+                            'assets/images/userDefultHeader.png',
+                            height: 120,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        } else {
+                          return Image.network(
+                            "${s.data.get('header')}",
+                            height: 120,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        }
+                      }
+                      return Image.asset(
+                        'assets/images/userDefultHeader.png',
+                        height: 120,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      );
+                    }),
                 Positioned(
                   bottom: -50,
-                  child: CircleAvatar(
-                    child: Image.asset(
-                      'assets/images/userDefultAvatar.png',
-                      width: 70,
-                      color: Colors.white,
-                    ),
-                    radius: 50,
-                    backgroundColor: Colors.grey,
+                  child: StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc('normalUsers')
+                        .collection('normalUsers')
+                        .doc(Authentication.currntUsername)
+                        .snapshots(),
+                    builder: (BuildContext,
+                        AsyncSnapshot<DocumentSnapshot<Object>> s) {
+                      if (s.connectionState == ConnectionState.waiting) {
+                        return CircleAvatar(
+                          radius: 50,
+                        );
+                      }
+                      if (s.data.get('avatar') == "") {
+                        return CircleAvatar(
+                          child: Image.asset(
+                            'assets/images/userDefultAvatar.png',
+                            width: 70,
+                            color: Colors.white,
+                          ),
+                          radius: 50,
+                          backgroundColor: Colors.grey,
+                        );
+                      }
+                      return CircleAvatar(
+                        backgroundImage: NetworkImage(
+                          s.data.get('avatar'),
+                        ),
+                        radius: 50,
+                        backgroundColor: Colors.grey,
+                      );
+                    },
                   ),
                 ),
 

@@ -35,7 +35,7 @@ dependencies:
   shared_preferences: ^2.0.7
   convex_bottom_bar: ^3.0.0
   like_button: ^2.0.3
-  firebase_storage: ^10.0.3
+  firebase_storage: ^10.1.0
   geolocator: ^7.7.1
   carousel_slider: ^4.0.0
   url_launcher: ^6.0.12
@@ -73,7 +73,7 @@ flutter:
      - assets/images/logOut.png
      - assets/images/userDefultAvatar.png
      - assets/images/userDefultHeader.png
-     - assets/images/eid.jpg
+     - assets/images/TourGuideIcon.png
 
 
   #   - images/a_dot_ham.jpeg

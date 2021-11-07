@@ -83,7 +83,10 @@ class Authentication with ChangeNotifier {
               'password': password,
               'userName': userName,
               'name': userName,
+              'avatar': "",
+              'header': "",
               'isTourGuide': true,
+              'ContactInfo': "",
               'expiryDate': "2000-01-01"
             });
             mess = "tourGuide signed up";
@@ -107,6 +110,8 @@ class Authentication with ChangeNotifier {
               'name': userName,
               'password': password,
               'userName': userName,
+              'avatar': "",
+              'header': "",
               'isTourGuide': false,
             });
             mess = "user signed up";

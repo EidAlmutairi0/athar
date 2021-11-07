@@ -5,12 +5,14 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 
-class UserEditProfileScreen extends StatefulWidget {
+class TourGuideEditProfileScreen extends StatefulWidget {
   @override
-  _UserEditProfileScreenState createState() => _UserEditProfileScreenState();
+  _TourGuideEditProfileScreenState createState() =>
+      _TourGuideEditProfileScreenState();
 }
 
-class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
+class _TourGuideEditProfileScreenState
+    extends State<TourGuideEditProfileScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final storage = FirebaseStorage.instance;
@@ -28,8 +30,8 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
         print(url);
         FirebaseFirestore.instance
             .collection('users')
-            .doc('normalUsers')
-            .collection('normalUsers')
+            .doc('tourGuides')
+            .collection('tourGuides')
             .doc(Authentication.currntUsername)
             .update({'avatar': url});
       });
@@ -43,8 +45,8 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
         print(url);
         FirebaseFirestore.instance
             .collection('users')
-            .doc('normalUsers')
-            .collection('normalUsers')
+            .doc('tourGuides')
+            .collection('tourGuides')
             .doc(Authentication.currntUsername)
             .update({
           'header': url,
@@ -78,6 +80,7 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
   }
 
   String name;
+  String contactInfo;
   bool isPressed = false;
   @override
   Widget build(BuildContext context) {
@@ -146,7 +149,7 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(right: 40, left: 40, top: 20),
+                  padding: const EdgeInsets.only(right: 10, left: 10, top: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -188,10 +191,58 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                               labelStyle: TextStyle(color: Colors.black54)),
                           validator: (val) {
                             if (val.isEmpty) {
-                              return "Please enter name.";
+                              return "Please enter a name.";
                             }
                             return null;
                           },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 30,
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    right: 10,
+                    left: 10,
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Contact Information',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Container(
+                        width: 200,
+                        height: 100,
+                        child: TextField(
+                          maxLines: 4,
+                          onChanged: (val) {
+                            setState(() {
+                              contactInfo = val;
+                            });
+                            print(contactInfo);
+                          },
+                          keyboardType: TextInputType.text,
+                          decoration: InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color(0xFFF2945E), width: 2.0),
+                                borderRadius: BorderRadius.circular(25.0),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              labelStyle: TextStyle(color: Colors.black54)),
                         ),
                       ),
                     ],
@@ -219,10 +270,13 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                             upLaodfile(avatar, header);
                             FirebaseFirestore.instance
                                 .collection('users')
-                                .doc('normalUsers')
-                                .collection('normalUsers')
+                                .doc('tourGuides')
+                                .collection('tourGuides')
                                 .doc(Authentication.currntUsername)
-                                .update({'name': name}).whenComplete(() {
+                                .update({
+                              'name': name,
+                              'ContactInfo': contactInfo
+                            }).whenComplete(() {
                               Scaffold.of(context).showSnackBar(SnackBar(
                                 content: Text('Changing has been saved'),
                                 backgroundColor: Colors.green,

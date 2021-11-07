@@ -86,33 +86,85 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
               overflow: Overflow.visible,
               alignment: Alignment.center,
               children: <Widget>[
-                Image.asset(
-                  'assets/images/userDefultHeader.png',
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
+                StreamBuilder(
+                    stream: FirebaseFirestore.instance
+                        .collection('users')
+                        .doc('tourGuides')
+                        .collection('tourGuides')
+                        .doc(Authentication.currntUsername)
+                        .snapshots(),
+                    builder: (BuildContext,
+                        AsyncSnapshot<DocumentSnapshot<Object>> s) {
+                      if (s.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          height: 120,
+                        );
+                      } else {
+                        if (s.data.get('header') == "") {
+                          return Image.asset(
+                            'assets/images/userDefultHeader.png',
+                            height: 120,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        } else {
+                          return Image.network(
+                            "${s.data.get('header')}",
+                            height: 120,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          );
+                        }
+                      }
+                    }),
                 Positioned(
                   bottom: -50,
                   child: Stack(
                     children: [
-                      CircleAvatar(
-                        child: Image.asset(
-                          'assets/images/userDefultAvatar.png',
-                          width: 70,
-                          color: Colors.white,
-                        ),
-                        radius: 50,
-                        backgroundColor: Colors.grey,
+                      StreamBuilder(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc('tourGuides')
+                            .collection('tourGuides')
+                            .doc(Authentication.currntUsername)
+                            .snapshots(),
+                        builder: (BuildContext,
+                            AsyncSnapshot<DocumentSnapshot<Object>> s) {
+                          if (s.connectionState == ConnectionState.waiting) {
+                            return CircleAvatar(
+                              radius: 50,
+                            );
+                          }
+                          if (s.data.get('avatar') == "") {
+                            return CircleAvatar(
+                              child: Image.asset(
+                                'assets/images/userDefultAvatar.png',
+                                width: 70,
+                                color: Colors.white,
+                              ),
+                              radius: 50,
+                              backgroundColor: Colors.grey,
+                            );
+                          }
+                          return CircleAvatar(
+                            backgroundImage: NetworkImage(
+                              s.data.get('avatar'),
+                            ),
+                            radius: 50,
+                            backgroundColor: Colors.grey,
+                          );
+                        },
                       ),
                       Positioned(
                         bottom: 0,
                         right: 0,
                         child: CircleAvatar(
-                          child: Icon(
-                            Icons.star,
-                            color: Colors.white,
-                            size: 20,
+                          child: Padding(
+                            padding: const EdgeInsets.all(5),
+                            child: Image.asset(
+                              'assets/images/TourGuideIcon.png',
+                              color: Colors.white,
+                            ),
                           ),
                           radius: 15,
                           backgroundColor: Color(0xFFF2945E),
@@ -132,23 +184,23 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
             ),
             ListTile(
               title: Center(
-                child: FutureBuilder<DocumentSnapshot>(
-                    future: FirebaseFirestore.instance
+                child: StreamBuilder<DocumentSnapshot>(
+                    stream: FirebaseFirestore.instance
                         .collection('users')
                         .doc('tourGuides')
                         .collection('tourGuides')
                         .doc(Authentication.currntUsername)
-                        .get(),
+                        .snapshots(),
                     builder: (BuildContext,
                         AsyncSnapshot<DocumentSnapshot<Object>> s) {
-                      if (s.connectionState == ConnectionState.done) {
-                        return Text(
-                          s.data.get('name'),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w900, fontSize: 20),
-                        );
+                      if (s.connectionState == ConnectionState.waiting) {
+                        return Container();
                       }
-                      return Container();
+                      return Text(
+                        s.data.get('name'),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w900, fontSize: 20),
+                      );
                     }),
               ),
               subtitle:

@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'ChangeEmail-Screen.dart';
 import 'DeleteAccount-Screen.dart';
 import 'User_Screens/User-editProfile-Screen.dart';
+import 'package:athar/providers/auth.dart';
+import 'TourGuide_Screens/TourGuide-editProfile-Screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   @override
@@ -17,11 +19,19 @@ class SettingsScreen extends StatelessWidget {
         children: [
           InkWell(
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => UserEditProfileScreen()),
-              );
+              if (Authentication.TourGuide) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TourGuideEditProfileScreen()),
+                );
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => UserEditProfileScreen()),
+                );
+              }
             },
             child: Container(
               child: Padding(
