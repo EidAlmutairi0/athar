@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import '/providers/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:athar/Widgets/PlaceCard2.dart';
-import 'VisitedPlaces-Screen.dart';
 import '../MyReviews-Screen.dart';
+import 'VisitedPlaces-Screen.dart';
 import '../Followers-Screen.dart';
 import 'package:athar/Widgets/FollowerCard.dart';
 import '../Followings-Screen.dart';
+import '../FollowerReviews-Screen.dart';
 
 class UserFollowerScreen extends StatefulWidget {
   String username;
@@ -32,6 +33,7 @@ class UserFollowerScreen extends StatefulWidget {
 
 class _UserFollowerScreenState extends State<UserFollowerScreen> {
   final dataBase = FirebaseFirestore.instance;
+  List<Review2> reviews = [];
   List<PlaceCard2> PlacesList2 = [];
   List<FollowerCard> followers = [];
   List<FollowerCard> followings = [];
@@ -249,6 +251,27 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
                 ),
               ],
             ),
+            SizedBox(
+              height: 10,
+            ),
+            Center(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFFF2945E),
+                  ),
+                  onPressed: () {
+                    setState(() {});
+                  },
+                  child: Container(
+                    width: 200,
+                    height: 50,
+                    child: Center(
+                        child: Text(
+                      'Follow',
+                      style: TextStyle(fontSize: 20),
+                    )),
+                  )),
+            ),
             Divider(),
             Container(
               height: 220,
@@ -378,7 +401,7 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => MyReviewsScreen()),
+                            builder: (context) => FolloerReixews(reviews)),
                       );
                     },
                     child: Row(
@@ -395,6 +418,17 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 return Text('');
+                              }
+                              final data = snapshot.data.docs;
+                              for (var review in data) {
+                                reviews.add(
+                                  Review2(
+                                      review.get('PlaceName'),
+                                      review.get('review'),
+                                      review.get('rate'),
+                                      review.get('Date'),
+                                      review.id),
+                                );
                               }
                               return Text(
                                 snapshot.data.size.toString(),
@@ -415,7 +449,9 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
                 ],
               ),
             ),
-            Divider(),
+            SizedBox(
+              height: 5,
+            )
           ],
         ),
       ),

@@ -336,3 +336,98 @@ class Review extends StatelessWidget {
     );
   }
 }
+
+class Review2 extends StatelessWidget {
+  String tname;
+  String text;
+  double rate;
+  var date;
+  var id;
+  Review2(String name, String text, double rate, var date, var id) {
+    this.text = text;
+    this.rate = rate;
+    tname = name;
+    this.date = date;
+    this.id = id;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          border: Border.all(color: Color(0xFFF2945E)),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black45,
+              offset: Offset(0, 5.0), //(x,y)
+              blurRadius: 7,
+            ),
+          ],
+        ),
+        width: MediaQuery.of(context).size.width - 50,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tname,
+                            style: TextStyle(
+                                fontFamily: 'RocknRollOne', fontSize: 16),
+                          ),
+                          SizedBox(
+                            height: 5,
+                          ),
+                          SmoothStarRating(
+                              isReadOnly: true,
+                              starCount: 5,
+                              rating: rate,
+                              size: 20,
+                              color: Colors.yellow.shade700,
+                              borderColor: Colors.yellow.shade700,
+                              spacing: 0.0),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Container(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      date,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ],
+              ),
+              Divider(),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  child: Text(text),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

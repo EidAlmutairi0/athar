@@ -7,18 +7,19 @@ import '../MyReviews-Screen.dart';
 import '../Followers-Screen.dart';
 import 'package:athar/Widgets/FollowerCard.dart';
 import '../Followings-Screen.dart';
+import '../FollowerReviews-Screen.dart';
 
 class TourGuideFollowerScreen extends StatefulWidget {
   String username;
   String name;
-  String userAvatar;
-  String userHeader;
+  var userAvatar;
+  var userHeader;
 
   TourGuideFollowerScreen(
     String username,
     String name,
-    String userAvatar,
-    String userHeader,
+    var userAvatar,
+    var userHeader,
   ) {
     this.username = username;
     this.name = name;
@@ -33,6 +34,7 @@ class TourGuideFollowerScreen extends StatefulWidget {
 
 class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
   final dataBase = FirebaseFirestore.instance;
+  List<Review2> reviews = [];
   List<PlaceCard2> PlacesList2 = [];
   List<FollowerCard> followers = [];
   List<FollowerCard> followings = [];
@@ -49,7 +51,7 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
             Stack(
               overflow: Overflow.visible,
               alignment: Alignment.center,
-              children: <Widget>[
+              children: [
                 (widget.userHeader == "")
                     ? {
                         Image.asset(
@@ -250,6 +252,27 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
                 ),
               ],
             ),
+            SizedBox(
+              height: 10,
+            ),
+            Center(
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFFF2945E),
+                  ),
+                  onPressed: () {
+                    setState(() {});
+                  },
+                  child: Container(
+                    width: 200,
+                    height: 50,
+                    child: Center(
+                        child: Text(
+                      'Follow',
+                      style: TextStyle(fontSize: 20),
+                    )),
+                  )),
+            ),
             Divider(),
             Container(
               height: 220,
@@ -379,7 +402,7 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => MyReviewsScreen()),
+                            builder: (context) => FolloerReixews(reviews)),
                       );
                     },
                     child: Row(
@@ -396,6 +419,17 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
                                 return Text('');
+                              }
+                              final data = snapshot.data.docs;
+                              for (var review in data) {
+                                reviews.add(
+                                  Review2(
+                                      review.get('PlaceName'),
+                                      review.get('review'),
+                                      review.get('rate'),
+                                      review.get('Date'),
+                                      review.id),
+                                );
                               }
                               return Text(
                                 snapshot.data.size.toString(),
@@ -416,7 +450,9 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
                 ],
               ),
             ),
-            Divider(),
+            SizedBox(
+              height: 5,
+            )
           ],
         ),
       ),
