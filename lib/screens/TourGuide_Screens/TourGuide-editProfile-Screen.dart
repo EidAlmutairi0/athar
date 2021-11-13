@@ -189,12 +189,6 @@ class _TourGuideEditProfileScreenState
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               labelStyle: TextStyle(color: Colors.black54)),
-                          validator: (val) {
-                            if (val.isEmpty) {
-                              return "Please enter a name.";
-                            }
-                            return null;
-                          },
                         ),
                       ),
                     ],
@@ -267,16 +261,7 @@ class _TourGuideEditProfileScreenState
                             setState(() {
                               isPressed = true;
                             });
-                            upLaodfile(avatar, header);
-                            FirebaseFirestore.instance
-                                .collection('users')
-                                .doc('tourGuides')
-                                .collection('tourGuides')
-                                .doc(Authentication.currntUsername)
-                                .update({
-                              'name': name,
-                              'ContactInfo': contactInfo
-                            }).whenComplete(() {
+                            upLaodfile(avatar, header).whenComplete(() {
                               Scaffold.of(context).showSnackBar(SnackBar(
                                 content: Text('Changing has been saved'),
                                 backgroundColor: Colors.green,
@@ -285,6 +270,22 @@ class _TourGuideEditProfileScreenState
                                 isPressed = false;
                               });
                             });
+                            if (name != null || name != '') {
+                              FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc('tourGuides')
+                                  .collection('tourGuides')
+                                  .doc(Authentication.currntUsername)
+                                  .update({'name': name});
+                            }
+                            if (contactInfo != null || contactInfo != '') {
+                              FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc('tourGuides')
+                                  .collection('tourGuides')
+                                  .doc(Authentication.currntUsername)
+                                  .update({'ContactInfo': contactInfo});
+                            }
                           },
                     child: (isPressed)
                         ? CircularProgressIndicator()

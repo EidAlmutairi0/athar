@@ -186,12 +186,6 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                                 borderRadius: BorderRadius.circular(15),
                               ),
                               labelStyle: TextStyle(color: Colors.black54)),
-                          validator: (val) {
-                            if (val.isEmpty) {
-                              return "Please enter name.";
-                            }
-                            return null;
-                          },
                         ),
                       ),
                     ],
@@ -216,13 +210,7 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                             setState(() {
                               isPressed = true;
                             });
-                            upLaodfile(avatar, header);
-                            FirebaseFirestore.instance
-                                .collection('users')
-                                .doc('normalUsers')
-                                .collection('normalUsers')
-                                .doc(Authentication.currntUsername)
-                                .update({'name': name}).whenComplete(() {
+                            upLaodfile(avatar, header).whenComplete(() {
                               Scaffold.of(context).showSnackBar(SnackBar(
                                 content: Text('Changing has been saved'),
                                 backgroundColor: Colors.green,
@@ -231,6 +219,14 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                                 isPressed = false;
                               });
                             });
+                            if (name != null || name != '') {
+                              FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc('normalUsers')
+                                  .collection('normalUsers')
+                                  .doc(Authentication.currntUsername)
+                                  .update({'name': name});
+                            }
                           },
                     child: (isPressed)
                         ? CircularProgressIndicator()

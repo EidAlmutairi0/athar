@@ -9,6 +9,8 @@ import '../Followers-Screen.dart';
 import 'package:athar/Widgets/FollowerCard.dart';
 import '../Followings-Screen.dart';
 import '../Settings-Screen.dart';
+import 'package:athar/screens/AccountPrivacy-Screen.dart';
+import 'package:athar/screens/Language-Screen.dart';
 
 class UserProfileScreen extends StatefulWidget {
   @override
@@ -22,8 +24,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   List<PlaceCard2> PlacesList2 = [];
   List<FollowerCard> followers = [];
   List<FollowerCard> followings = [];
-
-  List<String> accountPrivacy = ['Public', "Private"];
+  String option;
   List<String> languages = ['English', "Arabic"];
   String currentLanguage = "English";
   String currentPrivacy = "Public";
@@ -452,206 +453,254 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             Divider(),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'My Reviews',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'RocknRollOne',
-                      fontSize: 16,
+              child: Container(
+                height: 40,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'My Reviews',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'RocknRollOne',
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MyReviewsScreen()),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        StreamBuilder<QuerySnapshot>(
-                            stream: (Authentication.TourGuide)
-                                ? FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc('tourGuides')
-                                    .collection('tourGuides')
-                                    .doc("${Authentication.currntUsername}")
-                                    .collection('reviews')
-                                    .snapshots()
-                                : FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc('normalUsers')
-                                    .collection('normalUsers')
-                                    .doc("${Authentication.currntUsername}")
-                                    .collection('reviews')
-                                    .snapshots(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Text('');
-                              }
-                              return Text(
-                                snapshot.data.size.toString(),
-                                style: TextStyle(fontSize: 16),
-                              );
-                            }),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios_sharp,
-                          color: Colors.grey,
-                          size: 16,
-                        ),
-                      ],
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyReviewsScreen()),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          StreamBuilder<QuerySnapshot>(
+                              stream: (Authentication.TourGuide)
+                                  ? FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('tourGuides')
+                                      .collection('tourGuides')
+                                      .doc("${Authentication.currntUsername}")
+                                      .collection('reviews')
+                                      .snapshots()
+                                  : FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('normalUsers')
+                                      .collection('normalUsers')
+                                      .doc("${Authentication.currntUsername}")
+                                      .collection('reviews')
+                                      .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Text('');
+                                }
+                                return Text(
+                                  snapshot.data.size.toString(),
+                                  style: TextStyle(fontSize: 16),
+                                );
+                              }),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios_sharp,
+                            color: Colors.grey,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Divider(),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'My Favorite Places ',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'RocknRollOne',
-                      fontSize: 16,
+              child: Container(
+                height: 40,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'My Favorite Places ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'RocknRollOne',
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => MyFavoritePlaces()),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        StreamBuilder<QuerySnapshot>(
-                            stream: (Authentication.TourGuide)
-                                ? FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc('tourGuides')
-                                    .collection('tourGuides')
-                                    .doc("${Authentication.currntUsername}")
-                                    .collection('FavoritePlaces')
-                                    .snapshots()
-                                : FirebaseFirestore.instance
-                                    .collection('users')
-                                    .doc('normalUsers')
-                                    .collection('normalUsers')
-                                    .doc("${Authentication.currntUsername}")
-                                    .collection('FavoritePlaces')
-                                    .snapshots(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Text('');
-                              }
-                              return Text(
-                                snapshot.data.size.toString(),
-                                style: TextStyle(fontSize: 16),
-                              );
-                            }),
-                        SizedBox(
-                          width: 5,
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios_sharp,
-                          color: Colors.grey,
-                          size: 16,
-                        ),
-                      ],
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MyFavoritePlaces()),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          StreamBuilder<QuerySnapshot>(
+                              stream: (Authentication.TourGuide)
+                                  ? FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('tourGuides')
+                                      .collection('tourGuides')
+                                      .doc("${Authentication.currntUsername}")
+                                      .collection('FavoritePlaces')
+                                      .snapshots()
+                                  : FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('normalUsers')
+                                      .collection('normalUsers')
+                                      .doc("${Authentication.currntUsername}")
+                                      .collection('FavoritePlaces')
+                                      .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Text('');
+                                }
+                                return Text(
+                                  snapshot.data.size.toString(),
+                                  style: TextStyle(fontSize: 16),
+                                );
+                              }),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios_sharp,
+                            color: Colors.grey,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Divider(),
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Language',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'RocknRollOne',
-                      fontSize: 16,
+              child: Container(
+                height: 40,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Language',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'RocknRollOne',
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                  DropdownButton(
-                    alignment: AlignmentDirectional.center,
-                    icon: const Icon(Icons.arrow_downward),
-                    iconSize: 24,
-                    elevation: 16,
-                    underline: Container(
-                      decoration: BoxDecoration(color: Colors.black12),
-                      height: 2,
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LanguageScreen()),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          Text(
+                            'English',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios_sharp,
+                            color: Colors.grey,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
-                    items: languages
-                        .map((String item) => DropdownMenuItem<String>(
-                            child: Text(item), value: item))
-                        .toList(),
-                    onChanged: (String value) {
-                      setState(() {
-                        currentLanguage = value;
-                      });
-                    },
-                    value: currentLanguage,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Divider(),
             Padding(
               padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Account Privacy',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'RocknRollOne',
-                      fontSize: 16,
+              child: Container(
+                height: 40,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Account Privacy',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontFamily: 'RocknRollOne',
+                        fontSize: 16,
+                      ),
                     ),
-                  ),
-                  DropdownButton(
-                    alignment: AlignmentDirectional.center,
-                    icon: const Icon(Icons.arrow_downward),
-                    iconSize: 24,
-                    elevation: 16,
-                    underline: Container(
-                      decoration: BoxDecoration(color: Colors.black12),
-                      height: 2,
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  AccountPrivacyScreen(option)),
+                        );
+                      },
+                      child: Row(
+                        children: [
+                          StreamBuilder<DocumentSnapshot>(
+                              stream: (Authentication.TourGuide)
+                                  ? FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('tourGuides')
+                                      .collection('tourGuides')
+                                      .doc("${Authentication.currntUsername}")
+                                      .snapshots()
+                                  : FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('normalUsers')
+                                      .collection('normalUsers')
+                                      .doc("${Authentication.currntUsername}")
+                                      .snapshots(),
+                              builder: (context, snapshot) {
+                                if (snapshot.connectionState ==
+                                    ConnectionState.waiting) {
+                                  return Text('');
+                                }
+
+                                option = snapshot.data.get('Privacy');
+
+                                return Text(
+                                  snapshot.data.get('Privacy'),
+                                  style: TextStyle(fontSize: 16),
+                                );
+                              }),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Icon(
+                            Icons.arrow_forward_ios_sharp,
+                            color: Colors.grey,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
-                    items: accountPrivacy
-                        .map((String item) => DropdownMenuItem<String>(
-                            child: Text(item), value: item))
-                        .toList(),
-                    onChanged: (String value) {
-                      setState(() {
-                        currentPrivacy = value;
-                      });
-                    },
-                    value: currentPrivacy,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-            Divider(),
+            SizedBox(
+              height: 20,
+            )
           ],
         ),
       ),
