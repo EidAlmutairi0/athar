@@ -13,6 +13,7 @@ class FollowerCard extends StatefulWidget {
   bool ist;
   String followerAvatar = '';
   String followerHeader = '';
+  bool public;
 
   String followerName;
 
@@ -59,6 +60,7 @@ class FollowerCard extends StatefulWidget {
         followerAvatar = value.get('avatar');
         followerHeader = value.get('header');
         followerName = value.get('name');
+        public = true;
       } else {
         FirebaseFirestore.instance
             .collection('users')
@@ -70,6 +72,11 @@ class FollowerCard extends StatefulWidget {
           followerAvatar = value.get('avatar');
           followerHeader = value.get('header');
           followerName = value.get('name');
+          if (value.get('Privacy') == 'Public') {
+            public = true;
+          } else {
+            public = false;
+          }
         });
         userType = false;
       }
@@ -189,7 +196,8 @@ class _FollowerCardState extends State<FollowerCard> {
                                 widget.name,
                                 widget.followerName,
                                 widget.followerAvatar,
-                                widget.followerHeader)),
+                                widget.followerHeader,
+                                widget.isFollow)),
                       );
                     },
                     child: Container(
@@ -419,7 +427,9 @@ class _FollowerCardState extends State<FollowerCard> {
                                 widget.name,
                                 widget.followerName,
                                 widget.followerAvatar,
-                                widget.followerHeader)),
+                                widget.followerHeader,
+                                widget.isFollow,
+                                widget.public)),
                       );
                     },
                     child: Container(

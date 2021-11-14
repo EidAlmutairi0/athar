@@ -14,17 +14,22 @@ class UserFollowerScreen extends StatefulWidget {
   String name;
   String userAvatar;
   String userHeader;
+  bool isFollowed;
+  bool public;
+  String myType;
 
-  UserFollowerScreen(
-    String username,
-    String name,
-    String userAvatar,
-    String userHeader,
-  ) {
+  UserFollowerScreen(String username, String name, String userAvatar,
+      String userHeader, bool isFollowed, bool public) {
     this.username = username;
     this.name = name;
     this.userAvatar = userAvatar;
     this.userHeader = userHeader;
+    this.isFollowed = isFollowed;
+    this.public = public;
+    if (Authentication.TourGuide)
+      myType = 'tourGuides';
+    else
+      myType = 'normalUsers';
   }
 
   @override
@@ -45,7 +50,6 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Stack(
               overflow: Overflow.visible,
@@ -255,203 +259,289 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
               height: 10,
             ),
             Center(
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFFF2945E),
-                  ),
-                  onPressed: () {
-                    setState(() {});
-                  },
-                  child: Container(
-                    width: 200,
-                    height: 50,
-                    child: Center(
-                        child: Text(
-                      'Follow',
-                      style: TextStyle(fontSize: 20),
-                    )),
-                  )),
-            ),
-            Divider(),
-            Container(
-              height: 220,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        Text(
-                          'Visited Places',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            fontFamily: 'RocknRollOne',
-                            fontSize: 16,
-                          ),
-                        ),
-                        FlatButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      VisitedPlaces(PlacesList2)),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                'See All',
-                                style: TextStyle(color: Colors.grey),
-                              ),
-                              Icon(
-                                Icons.arrow_forward_ios_sharp,
-                                color: Colors.grey,
-                                size: 16,
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Center(
-                      child: FutureBuilder<QuerySnapshot>(
-                        future: FirebaseFirestore.instance
+              child: (widget.isFollowed)
+                  ? ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                      ),
+                      onPressed: () {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(widget.myType)
+                            .collection(widget.myType)
+                            .doc("${Authentication.currntUsername}")
+                            .collection('Followings')
+                            .doc(widget.username)
+                            .delete();
+                        FirebaseFirestore.instance
                             .collection('users')
                             .doc('normalUsers')
                             .collection('normalUsers')
                             .doc(widget.username)
-                            .collection('VisitedPlaces')
-                            .get(),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text('Something went wrong'),
-                            );
-                          }
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 60, left: 170),
-                                child: CircularProgressIndicator(
-                                  color: Color(0xFFF2945E),
-                                ),
-                              ),
-                            );
-                          }
-                          if (snapshot.requireData.docs.isEmpty) {
-                            return Center(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.only(top: 60, left: 20),
-                                child: Text(
-                                  "This user did not visit any place",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }
-
-                          final data = snapshot.data.docs;
-                          for (var plac in data) {
-                            PlacesList2.add(
-                                PlaceCard2(plac.id, plac.get('image')));
-                          }
-
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: (PlacesList2.length > 4)
-                                ? PlacesList2.sublist(0, 3)
-                                : PlacesList2,
-                          );
-                        },
+                            .collection('Followers')
+                            .doc("${Authentication.currntUsername}")
+                            .delete();
+                        setState(() {
+                          widget.isFollowed = !widget.isFollowed;
+                        });
+                      },
+                      child: Container(
+                        width: 200,
+                        height: 50,
+                        child: Center(
+                            child: Text(
+                          'Follow',
+                          style:
+                              TextStyle(fontSize: 20, color: Color(0xFFF2945E)),
+                        )),
+                      ))
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xFFF2945E),
                       ),
-                    ),
-                  ),
-                ],
-              ),
+                      onPressed: () {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(widget.myType)
+                            .collection(widget.myType)
+                            .doc("${Authentication.currntUsername}")
+                            .collection('Followings')
+                            .doc(widget.username)
+                            .set({
+                          'isTourGuide': false,
+                        });
+                        {
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc('normalUsers')
+                              .collection('normalUsers')
+                              .doc(widget.username)
+                              .collection('Followers')
+                              .doc("${Authentication.currntUsername}")
+                              .set({
+                            'isTourGuide': Authentication.TourGuide,
+                          });
+                        }
+
+                        setState(() {
+                          widget.isFollowed = !widget.isFollowed;
+                        });
+                      },
+                      child: Container(
+                        width: 200,
+                        height: 50,
+                        child: Center(
+                            child: Text(
+                          'Follow',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        )),
+                      )),
             ),
             Divider(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text(
-                    'Reviews',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w900,
-                      fontFamily: 'RocknRollOne',
-                      fontSize: 16,
-                    ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => FolloerReixews(reviews)),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance
-                                .collection('users')
-                                .doc('normalUsers')
-                                .collection('normalUsers')
-                                .doc(widget.username)
-                                .collection('reviews')
-                                .snapshots(),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Text('');
-                              }
-                              final data = snapshot.data.docs;
-                              for (var review in data) {
-                                reviews.add(
-                                  Review2(
-                                      review.get('PlaceName'),
-                                      review.get('review'),
-                                      review.get('rate'),
-                                      review.get('Date'),
-                                      review.id),
+            (widget.public)
+                ? Column(
+                    children: [
+                      Container(
+                        height: 220,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    'Visited Places',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w900,
+                                      fontFamily: 'RocknRollOne',
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  FlatButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                VisitedPlaces(PlacesList2)),
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          'See All',
+                                          style: TextStyle(color: Colors.grey),
+                                        ),
+                                        Icon(
+                                          Icons.arrow_forward_ios_sharp,
+                                          color: Colors.grey,
+                                          size: 16,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Center(
+                                child: FutureBuilder<QuerySnapshot>(
+                                  future: FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('normalUsers')
+                                      .collection('normalUsers')
+                                      .doc(widget.username)
+                                      .collection('VisitedPlaces')
+                                      .get(),
+                                  builder: (context, snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Center(
+                                        child: Text('Something went wrong'),
+                                      );
+                                    }
+                                    if (snapshot.connectionState ==
+                                        ConnectionState.waiting) {
+                                      return Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 60, left: 170),
+                                          child: CircularProgressIndicator(
+                                            color: Color(0xFFF2945E),
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                    if (snapshot.requireData.docs.isEmpty) {
+                                      return Center(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 60, left: 20),
+                                          child: Text(
+                                            "This user did not visit any place",
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      );
+                                    }
+
+                                    final data = snapshot.data.docs;
+                                    for (var plac in data) {
+                                      PlacesList2.add(PlaceCard2(
+                                          plac.id, plac.get('image')));
+                                    }
+
+                                    return Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: (PlacesList2.length > 4)
+                                          ? PlacesList2.sublist(0, 3)
+                                          : PlacesList2,
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Divider(),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Reviews',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w900,
+                                fontFamily: 'RocknRollOne',
+                                fontSize: 16,
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          FolloerReixews(reviews)),
                                 );
-                              }
-                              return Text(
-                                snapshot.data.size.toString(),
-                                style: TextStyle(fontSize: 16),
-                              );
-                            }),
-                        SizedBox(
-                          width: 5,
+                              },
+                              child: Row(
+                                children: [
+                                  StreamBuilder<QuerySnapshot>(
+                                      stream: FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc('normalUsers')
+                                          .collection('normalUsers')
+                                          .doc(widget.username)
+                                          .collection('reviews')
+                                          .snapshots(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.connectionState ==
+                                            ConnectionState.waiting) {
+                                          return Text('');
+                                        }
+                                        final data = snapshot.data.docs;
+                                        for (var review in data) {
+                                          reviews.add(
+                                            Review2(
+                                                review.get('PlaceName'),
+                                                review.get('review'),
+                                                review.get('rate'),
+                                                review.get('Date'),
+                                                review.id),
+                                          );
+                                        }
+                                        return Text(
+                                          snapshot.data.size.toString(),
+                                          style: TextStyle(fontSize: 16),
+                                        );
+                                      }),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios_sharp,
+                                    color: Colors.grey,
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                    ],
+                  )
+                : Padding(
+                    padding: const EdgeInsets.only(top: 50),
+                    child: Column(
+                      children: [
                         Icon(
-                          Icons.arrow_forward_ios_sharp,
+                          Icons.lock_outline,
                           color: Colors.grey,
-                          size: 16,
+                          size: 40,
                         ),
+                        Text(
+                          'This account is private',
+                          style: TextStyle(color: Colors.grey, fontSize: 18),
+                        )
                       ],
                     ),
                   ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 5,
-            )
           ],
         ),
       ),

@@ -77,7 +77,7 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
     }
   }
 
-  String name;
+  String name = '';
   bool isPressed = false;
   @override
   Widget build(BuildContext context) {
@@ -219,7 +219,7 @@ class _UserEditProfileScreenState extends State<UserEditProfileScreen> {
                                 isPressed = false;
                               });
                             });
-                            if (name != null || name != '') {
+                            if (name != '') {
                               FirebaseFirestore.instance
                                   .collection('users')
                                   .doc('normalUsers')

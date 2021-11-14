@@ -79,8 +79,8 @@ class _TourGuideEditProfileScreenState
     }
   }
 
-  String name;
-  String contactInfo;
+  String name = '';
+  String contactInfo = '';
   bool isPressed = false;
   @override
   Widget build(BuildContext context) {
@@ -270,7 +270,7 @@ class _TourGuideEditProfileScreenState
                                 isPressed = false;
                               });
                             });
-                            if (name != null || name != '') {
+                            if (name != '') {
                               FirebaseFirestore.instance
                                   .collection('users')
                                   .doc('tourGuides')
@@ -278,7 +278,7 @@ class _TourGuideEditProfileScreenState
                                   .doc(Authentication.currntUsername)
                                   .update({'name': name});
                             }
-                            if (contactInfo != null || contactInfo != '') {
+                            if (contactInfo != '') {
                               FirebaseFirestore.instance
                                   .collection('users')
                                   .doc('tourGuides')

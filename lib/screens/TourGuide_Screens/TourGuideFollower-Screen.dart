@@ -14,17 +14,26 @@ class TourGuideFollowerScreen extends StatefulWidget {
   String name;
   var userAvatar;
   var userHeader;
+  bool isFollowed;
+  String myType;
 
   TourGuideFollowerScreen(
     String username,
     String name,
     var userAvatar,
     var userHeader,
+    bool isFollowed,
   ) {
     this.username = username;
     this.name = name;
     this.userAvatar = userAvatar;
     this.userHeader = userHeader;
+    this.isFollowed = isFollowed;
+
+    if (Authentication.TourGuide)
+      myType = 'tourGuides';
+    else
+      myType = 'normalUsers';
   }
 
   @override
@@ -110,6 +119,28 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
             ),
             SizedBox(
               height: 5,
+            ),
+            Center(
+              child: StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc('tourGuides')
+                      .collection('tourGuides')
+                      .doc(widget.username)
+                      .snapshots(),
+                  builder: (BuildContext,
+                      AsyncSnapshot<DocumentSnapshot<Object>> s) {
+                    if (s.connectionState == ConnectionState.waiting) {
+                      return Container();
+                    }
+                    return Text(
+                      s.data.get('ContactInfo'),
+                      style: TextStyle(fontSize: 14),
+                    );
+                  }),
+            ),
+            SizedBox(
+              height: 10,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -256,22 +287,83 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
               height: 10,
             ),
             Center(
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFFF2945E),
-                  ),
-                  onPressed: () {
-                    setState(() {});
-                  },
-                  child: Container(
-                    width: 200,
-                    height: 50,
-                    child: Center(
-                        child: Text(
-                      'Follow',
-                      style: TextStyle(fontSize: 20),
-                    )),
-                  )),
+              child: (widget.isFollowed)
+                  ? ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.white,
+                      ),
+                      onPressed: () {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(widget.myType)
+                            .collection(widget.myType)
+                            .doc("${Authentication.currntUsername}")
+                            .collection('Followings')
+                            .doc(widget.username)
+                            .delete();
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc('normalUsers')
+                            .collection('normalUsers')
+                            .doc(widget.username)
+                            .collection('Followers')
+                            .doc("${Authentication.currntUsername}")
+                            .delete();
+                        setState(() {
+                          widget.isFollowed = !widget.isFollowed;
+                        });
+                      },
+                      child: Container(
+                        width: 200,
+                        height: 50,
+                        child: Center(
+                            child: Text(
+                          'Follow',
+                          style:
+                              TextStyle(fontSize: 20, color: Color(0xFFF2945E)),
+                        )),
+                      ))
+                  : ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Color(0xFFF2945E),
+                      ),
+                      onPressed: () {
+                        FirebaseFirestore.instance
+                            .collection('users')
+                            .doc(widget.myType)
+                            .collection(widget.myType)
+                            .doc("${Authentication.currntUsername}")
+                            .collection('Followings')
+                            .doc(widget.username)
+                            .set({
+                          'isTourGuide': false,
+                        });
+                        {
+                          FirebaseFirestore.instance
+                              .collection('users')
+                              .doc('normalUsers')
+                              .collection('normalUsers')
+                              .doc(widget.username)
+                              .collection('Followers')
+                              .doc("${Authentication.currntUsername}")
+                              .set({
+                            'isTourGuide': Authentication.TourGuide,
+                          });
+                        }
+
+                        setState(() {
+                          widget.isFollowed = !widget.isFollowed;
+                        });
+                      },
+                      child: Container(
+                        width: 200,
+                        height: 50,
+                        child: Center(
+                            child: Text(
+                          'Follow',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        )),
+                      )),
             ),
             Divider(),
             Container(
