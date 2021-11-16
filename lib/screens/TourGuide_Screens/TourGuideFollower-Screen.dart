@@ -12,15 +12,15 @@ import '../FollowerReviews-Screen.dart';
 class TourGuideFollowerScreen extends StatefulWidget {
   String username;
   String name;
-  var userAvatar;
-  var userHeader;
+  String userAvatar = '';
+  String userHeader = '';
   bool isFollowed;
   String myType;
 
   TourGuideFollowerScreen(
     String username,
     String name,
-    var userAvatar,
+    String userAvatar,
     var userHeader,
     bool isFollowed,
   ) {
@@ -56,20 +56,18 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
+          children: [
             Stack(
               overflow: Overflow.visible,
               alignment: Alignment.center,
               children: [
-                (widget.userHeader == "")
-                    ? {
-                        Image.asset(
-                          'assets/images/userDefultHeader.png',
-                          height: 120,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      }
+                (!widget.userHeader.contains('firebasestorage'))
+                    ? Image.asset(
+                        'assets/images/userDefultHeader.png',
+                        height: 120,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
                     : Image.network(
                         widget.userHeader,
                         height: 120,
@@ -79,18 +77,16 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
 
                 Positioned(
                   bottom: -50,
-                  child: (widget.userAvatar == "")
-                      ? {
-                          CircleAvatar(
-                            child: Image.asset(
-                              'assets/images/userDefultAvatar.png',
-                              width: 70,
-                              color: Colors.white,
-                            ),
-                            radius: 50,
-                            backgroundColor: Colors.grey,
+                  child: (!widget.userAvatar.contains('firebasestorage'))
+                      ? CircleAvatar(
+                          child: Image.asset(
+                            'assets/images/userDefultAvatar.png',
+                            width: 70,
+                            color: Colors.white,
                           ),
-                        }
+                          radius: 50,
+                          backgroundColor: Colors.grey,
+                        )
                       : CircleAvatar(
                           backgroundImage: NetworkImage(
                             widget.userAvatar,
@@ -303,8 +299,8 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
                             .delete();
                         FirebaseFirestore.instance
                             .collection('users')
-                            .doc('normalUsers')
-                            .collection('normalUsers')
+                            .doc('tourGuides')
+                            .collection('tourGuides')
                             .doc(widget.username)
                             .collection('Followers')
                             .doc("${Authentication.currntUsername}")
@@ -341,8 +337,8 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
                         {
                           FirebaseFirestore.instance
                               .collection('users')
-                              .doc('normalUsers')
-                              .collection('normalUsers')
+                              .doc('tourGuides')
+                              .collection('tourGuides')
                               .doc(widget.username)
                               .collection('Followers')
                               .doc("${Authentication.currntUsername}")

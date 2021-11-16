@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '/globals.dart' as globals;
+import 'package:athar/providers/auth.dart';
+import 'package:athar/screens/TourGuide_Screens/TourGuideFollower-Screen.dart';
 
 class TourGuidesScreen extends StatefulWidget {
   @override
@@ -89,55 +91,156 @@ class _TourGuidesScreenState extends State<TourGuidesScreen> {
 
 class TourGuideBigCard extends StatelessWidget {
   String tname;
+  String myType;
+  bool isFollowe = false;
+
   TourGuideBigCard(String name) {
     tname = name;
+
+    if (Authentication.TourGuide == true) {
+      myType = 'tourGuides';
+    } else {
+      myType = 'normalUsers';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () {},
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: Color(0xFFF2945E)),
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black45,
-                offset: Offset(0, 5.0), //(x,y)
-                blurRadius: 7,
-              ),
-            ],
-          ),
-          width: MediaQuery.of(context).size.width - 50,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  child: Icon(
-                    Icons.person_outline_outlined,
-                    size: 50,
-                    color: Colors.white54,
+      padding: const EdgeInsets.all(15),
+      child: FutureBuilder(
+        future: FirebaseFirestore.instance
+            .collection('users')
+            .doc('tourGuides')
+            .collection('tourGuides')
+            .doc(tname)
+            .get(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Color(0xFFF2945E)),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black45,
+                    offset: Offset(0, 5.0), //(x,y)
+                    blurRadius: 7,
                   ),
-                  radius: 40,
-                  backgroundColor: Colors.grey,
+                ],
+              ),
+              width: MediaQuery.of(context).size.width - 50,
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundColor: Colors.grey,
+                    ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Row(
+                      children: [
+                        Container(),
+                        Text(
+                          '@$tname',
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-                SizedBox(
-                  width: 15,
+              ),
+            );
+          }
+          FirebaseFirestore.instance
+              .collection('users')
+              .doc(myType)
+              .collection(myType)
+              .doc(Authentication.currntUsername)
+              .collection('Followings')
+              .doc(tname)
+              .get()
+              .then((value) => {
+                    if (value.exists) {isFollowe = true}
+                  });
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Color(0xFFF2945E)),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black45,
+                  offset: Offset(0, 5.0), //(x,y)
+                  blurRadius: 7,
                 ),
-                Text(
-                  tname,
-                  style: TextStyle(fontFamily: 'RocknRollOne', fontSize: 16),
-                )
               ],
             ),
-          ),
-        ),
+            width: MediaQuery.of(context).size.width - 50,
+            child: InkWell(
+              onTap: (Authentication.currntUsername == tname)
+                  ? null
+                  : () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => TourGuideFollowerScreen(
+                                  tname,
+                                  snapshot.data.get('name'),
+                                  snapshot.data.get('avatar'),
+                                  snapshot.data.get('header'),
+                                  isFollowe,
+                                )),
+                      );
+                    },
+              child: Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                  children: [
+                    (snapshot.data.get('avatar') == '')
+                        ? CircleAvatar(
+                            child: Icon(
+                              Icons.person_outline_outlined,
+                              size: 50,
+                              color: Colors.white54,
+                            ),
+                            radius: 30,
+                            backgroundColor: Colors.grey,
+                          )
+                        : CircleAvatar(
+                            backgroundImage:
+                                NetworkImage(snapshot.data.get('avatar')),
+                            radius: 30,
+                            backgroundColor: Colors.grey,
+                          ),
+                    SizedBox(
+                      width: 15,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          snapshot.data.get('name'),
+                          style: TextStyle(
+                              fontFamily: 'RocknRollOne', fontSize: 16),
+                        ),
+                        Text(
+                          '@$tname',
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

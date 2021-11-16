@@ -20,9 +20,10 @@ class _FolloerReixewsState extends State<FolloerReixews> {
         title: Text('Reviews'),
         backgroundColor: Color(0xFFF2945E),
       ),
-      body: Center(
-        child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Center(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: widget.reviews,
           ),
         ),

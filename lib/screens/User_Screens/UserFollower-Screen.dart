@@ -56,14 +56,12 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
               alignment: Alignment.center,
               children: <Widget>[
                 (widget.userHeader == "")
-                    ? {
-                        Image.asset(
-                          'assets/images/userDefultHeader.png',
-                          height: 120,
-                          width: double.infinity,
-                          fit: BoxFit.cover,
-                        ),
-                      }
+                    ? Image.asset(
+                        'assets/images/userDefultHeader.png',
+                        height: 120,
+                        width: double.infinity,
+                        fit: BoxFit.cover,
+                      )
                     : Image.network(
                         widget.userHeader,
                         height: 120,
@@ -74,17 +72,15 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
                 Positioned(
                   bottom: -50,
                   child: (widget.userAvatar == "")
-                      ? {
-                          CircleAvatar(
-                            child: Image.asset(
-                              'assets/images/userDefultAvatar.png',
-                              width: 70,
-                              color: Colors.white,
-                            ),
-                            radius: 50,
-                            backgroundColor: Colors.grey,
+                      ? CircleAvatar(
+                          child: Image.asset(
+                            'assets/images/userDefultAvatar.png',
+                            width: 70,
+                            color: Colors.white,
                           ),
-                        }
+                          radius: 50,
+                          backgroundColor: Colors.grey,
+                        )
                       : CircleAvatar(
                           backgroundImage: NetworkImage(
                             widget.userAvatar,
