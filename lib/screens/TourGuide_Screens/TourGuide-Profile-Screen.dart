@@ -467,7 +467,7 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                         }
 
                         return Row(
-                          children: (PlacesList2.length > 4)
+                          children: (PlacesList2.length > 3)
                               ? PlacesList2.sublist(0, 3)
                               : PlacesList2,
                         );

@@ -439,7 +439,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: (PlacesList2.length > 4)
+                            children: (PlacesList2.length > 3)
                                 ? PlacesList2.sublist(0, 3)
                                 : PlacesList2,
                           );

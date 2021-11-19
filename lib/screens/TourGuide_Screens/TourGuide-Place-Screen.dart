@@ -11,6 +11,8 @@ import '../Place-Reviews-Screen.dart';
 import 'package:geolocator/geolocator.dart';
 import '../LocationService.dart';
 import 'package:athar/providers/auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import '../VR-Screen.dart';
 
 class TourguidePlaceScreen extends StatefulWidget {
   var loc = Geolocator();

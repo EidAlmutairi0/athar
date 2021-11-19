@@ -11,6 +11,8 @@ import 'package:athar/screens/Visitors-Screen.dart';
 import 'package:athar/providers/auth.dart';
 import 'package:geolocator/geolocator.dart';
 import '../LocationService.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import '../VR-Screen.dart';
 
 class UserPlaceScreen extends StatefulWidget {
   var loc = Geolocator();
@@ -61,7 +63,6 @@ class UserPlaceScreen extends StatefulWidget {
 class _UserPlaceScreenState extends State<UserPlaceScreen>
     with TickerProviderStateMixin {
   TabController _controller;
-  Image VRimage;
   @override
   String previewImageUrl =
       'https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=$GOOGLE_API_KEY';
@@ -70,6 +71,7 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
   void initState() {
     _controller = new TabController(length: 2, vsync: this);
     _getLocation();
+    getVRImages();
     super.initState();
   }
 
@@ -93,6 +95,21 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
       ));
     }
     return imagesList;
+  }
+
+  final storage = FirebaseStorage.instance;
+  List VRimages = [];
+
+  getVRImages() async {
+    await FirebaseFirestore.instance
+        .collection('places')
+        .doc('${globals.currentPlace}')
+        .get()
+        .then((value) {
+      setState(() {
+        VRimages = value.get('VRImages');
+      });
+    });
   }
 
   @override
@@ -751,7 +768,15 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                             ),
                             InkWell(
                               borderRadius: BorderRadius.circular(25),
-                              onTap: () {},
+                              onTap: (VRimages.isEmpty || VRimages[0] == "")
+                                  ? null
+                                  : () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return VRScreen(
+                                            globals.currentPlace, VRimages);
+                                      }));
+                                    },
                               child: Container(
                                 decoration: BoxDecoration(
                                     boxShadow: [
