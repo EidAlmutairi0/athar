@@ -13,6 +13,7 @@ import 'package:geolocator/geolocator.dart';
 import '../LocationService.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../VR-Screen.dart';
+import 'package:panorama/panorama.dart';
 
 class UserPlaceScreen extends StatefulWidget {
   var loc = Geolocator();
@@ -98,16 +99,20 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
   }
 
   final storage = FirebaseStorage.instance;
-  List VRimages = [];
+  List<Panorama> VRimages = [];
+  List temp = [];
 
-  getVRImages() async {
+  Future getVRImages() async {
     await FirebaseFirestore.instance
         .collection('places')
         .doc('${globals.currentPlace}')
         .get()
         .then((value) {
       setState(() {
-        VRimages = value.get('VRImages');
+        temp = value.get('VRImages');
+        for (var im in temp) {
+          VRimages.add(Panorama(child: Image.network(im)));
+        }
       });
     });
   }
@@ -768,7 +773,7 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                             ),
                             InkWell(
                               borderRadius: BorderRadius.circular(25),
-                              onTap: (VRimages.isEmpty || VRimages[0] == "")
+                              onTap: (temp.isEmpty || temp[0] == "")
                                   ? null
                                   : () {
                                       Navigator.push(context,

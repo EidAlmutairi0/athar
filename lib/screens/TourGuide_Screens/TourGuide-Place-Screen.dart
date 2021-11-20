@@ -13,6 +13,8 @@ import '../LocationService.dart';
 import 'package:athar/providers/auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../VR-Screen.dart';
+import 'package:panorama/panorama.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class TourguidePlaceScreen extends StatefulWidget {
   var loc = Geolocator();
@@ -74,6 +76,25 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
     _controller = new TabController(length: 2, vsync: this);
     _getLocation();
     super.initState();
+  }
+
+  final storage = FirebaseStorage.instance;
+  List<Panorama> VRimages = [];
+  List temp = [];
+
+  Future getVRImages() async {
+    await FirebaseFirestore.instance
+        .collection('places')
+        .doc('${globals.currentPlace}')
+        .get()
+        .then((value) {
+      setState(() {
+        temp = value.get('VRImages');
+        for (var im in temp) {
+          VRimages.add(Panorama(child: Image.network(im)));
+        }
+      });
+    });
   }
 
   Future<String> _getLocation() async {
@@ -760,7 +781,15 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                             ),
                             InkWell(
                               borderRadius: BorderRadius.circular(25),
-                              onTap: () {},
+                              onTap: (temp.isEmpty || temp[0] == "")
+                                  ? null
+                                  : () {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return VRScreen(
+                                            globals.currentPlace, VRimages);
+                                      }));
+                                    },
                               child: Container(
                                 decoration: BoxDecoration(
                                     boxShadow: [
