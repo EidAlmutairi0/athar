@@ -15,48 +15,52 @@ class VRScreen extends StatefulWidget {
 
 class _VRScreenState extends State<VRScreen> {
   int imageIndex = 0;
+  bool nextImage = false;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.placeName),
-        centerTitle: true,
-        backgroundColor: Color(0xFFF2945E),
-      ),
-      body: Center(
-        child: Stack(
-          children: [
-            Container(
-              child: widget.VRimages[imageIndex],
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                      onPressed: (imageIndex == 0)
-                          ? null
-                          : () {
-                              setState(() {
-                                imageIndex--;
-                              });
-                            },
-                      child: Icon(Icons.arrow_back)),
-                  ElevatedButton(
-                      onPressed: (imageIndex == widget.VRimages.length - 1)
-                          ? null
-                          : () {
-                              setState(() {
-                                imageIndex++;
-                              });
-                            },
-                      child: Icon(Icons.arrow_forward)),
-                ],
+    return AbsorbPointer(
+      absorbing: nextImage,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.placeName),
+          centerTitle: true,
+          backgroundColor: Color(0xFFF2945E),
+        ),
+        body: Center(
+          child: Stack(
+            children: [
+              Container(
+                child: widget.VRimages[imageIndex],
               ),
-            )
-          ],
+              Padding(
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                        onPressed: (imageIndex == 0)
+                            ? null
+                            : () {
+                                setState(() {
+                                  imageIndex--;
+                                });
+                              },
+                        child: Icon(Icons.arrow_back)),
+                    ElevatedButton(
+                        onPressed: (imageIndex == widget.VRimages.length - 1)
+                            ? null
+                            : () {
+                                setState(() {
+                                  imageIndex++;
+                                });
+                              },
+                        child: Icon(Icons.arrow_forward)),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

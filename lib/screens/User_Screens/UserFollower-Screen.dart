@@ -286,7 +286,7 @@ class _UserFollowerScreenState extends State<UserFollowerScreen> {
                         height: 50,
                         child: Center(
                             child: Text(
-                          'Follow',
+                          'Following',
                           style:
                               TextStyle(fontSize: 20, color: Color(0xFFF2945E)),
                         )),

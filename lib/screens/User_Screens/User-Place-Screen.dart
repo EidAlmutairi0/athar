@@ -14,6 +14,7 @@ import '../LocationService.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import '../VR-Screen.dart';
 import 'package:panorama/panorama.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class UserPlaceScreen extends StatefulWidget {
   var loc = Geolocator();
@@ -111,7 +112,10 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
       setState(() {
         temp = value.get('VRImages');
         for (var im in temp) {
-          VRimages.add(Panorama(child: Image.network(im)));
+          VRimages.add(Panorama(
+              child: Image(
+            image: CachedNetworkImageProvider(im),
+          )));
         }
       });
     });
