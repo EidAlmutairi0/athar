@@ -10,6 +10,7 @@ import 'screens/User_Screens/User-Main-Screen.dart';
 import 'package:geolocator/geolocator.dart';
 import 'globals.dart' as globals;
 import 'package:athar/providers/UserInfoProvider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
