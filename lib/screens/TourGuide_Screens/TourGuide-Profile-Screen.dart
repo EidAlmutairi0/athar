@@ -10,6 +10,7 @@ import '../Settings-Screen.dart';
 import 'package:athar/screens/Language-Screen.dart';
 import 'package:athar/Widgets/FollowerCard.dart';
 import '../Followings-Screen.dart';
+import 'Plans-Screen.dart';
 
 class TourGuideProfileScreen extends StatefulWidget {
   @override
@@ -28,6 +29,8 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
   List<String> languages = ['English', "Arabic"];
   String currentLanguage = "English";
   String currentPrivacy = "Public";
+
+  bool isActive;
 
   @override
   @override
@@ -627,25 +630,58 @@ class _TourGuideProfileScreenState extends State<TourGuideProfileScreen> {
                         fontSize: 16,
                       ),
                     ),
-                    InkWell(
-                      onTap: () {},
-                      child: Row(
-                        children: [
-                          Text(
-                            'Active',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios_sharp,
-                            color: Colors.grey,
-                            size: 16,
-                          ),
-                        ],
-                      ),
-                    ),
+                    StreamBuilder<DocumentSnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('users')
+                            .doc('tourGuides')
+                            .collection('tourGuides')
+                            .doc("${Authentication.currntUsername}")
+                            .snapshots(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text('');
+                          }
+                          DateTime expiryDate =
+                              DateTime.parse(snapshot.data.get('expiryDate'));
+                          DateTime now = new DateTime.now();
+                          DateTime date =
+                              new DateTime(now.year, now.month, now.day);
+                          if (expiryDate.isBefore(date)) {
+                            isActive = false;
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PlansScreen()),
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  Text(
+                                    "Expired",
+                                    style: TextStyle(fontSize: 16),
+                                  ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios_sharp,
+                                    color: Colors.grey,
+                                    size: 16,
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            isActive = true;
+                            return Text(
+                              '${expiryDate.year}/${expiryDate.month}/${expiryDate.day}',
+                              style: TextStyle(fontSize: 16),
+                            );
+                          }
+                        }),
                   ],
                 ),
               ),
