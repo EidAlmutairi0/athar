@@ -11,7 +11,7 @@ class PlansScreen extends StatefulWidget {
 
 class _PlansScreenState extends State<PlansScreen> {
   int selectedPlan = 1;
-  int amount = 50;
+  int amount = 10;
   var url = 'https://us-central1-athar-654db.cloudfunctions.net/paypalPayment';
 
   @override
@@ -227,9 +227,10 @@ class _PlansScreenState extends State<PlansScreen> {
 
                               final http.Response response = await http.post(
                                   Uri.tryParse(
-                                      '$url?payment_method_nonce=${result.paymentMethodNonce}&device_data=${result.deviceData}'));
+                                      '$url?payment_method_nonce=${result.paymentMethodNonce}&device_data=${result.deviceData}&subAmount=${amount.toString()}'));
+                              final payResult =
+                                  await json.decode(response.body.toString());
 
-                              final payResult = jsonDecode(response.body);
                               if (payResult['result'] == 'success') {
                                 print('payment done');
                               }
