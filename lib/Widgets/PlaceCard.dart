@@ -228,7 +228,9 @@ class _PlaceCardState extends State<PlaceCard> {
       child: InkWell(
         borderRadius: BorderRadius.circular(15),
         onTap: () {
-          globals.currentPlace = widget.PlaceName;
+          setState(() {
+            globals.currentPlace = widget.PlaceName;
+          });
           print(globals.currentPlace);
           if (Authentication.TourGuide)
             Navigator.push(
