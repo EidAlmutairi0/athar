@@ -227,13 +227,7 @@ class _PlansScreenState extends State<PlansScreen> {
 
                               final http.Response response = await http.post(
                                   Uri.tryParse(
-                                      '$url?payment_method_nonce=${result.paymentMethodNonce}&device_data=${result.deviceData}&subAmount=${amount.toString()}'));
-                              final payResult =
-                                  await json.decode(response.body.toString());
-
-                              if (payResult['result'] == 'success') {
-                                print('payment done');
-                              }
+                                      '$url?payment_method_nonce=${result.paymentMethodNonce}&device_data=${result.deviceData}&amount=${amount.toString()}'));
                             }
                           },
                           child: Container(

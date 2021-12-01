@@ -65,7 +65,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         }
         Scaffold.of(ctx).showSnackBar(SnackBar(
           content: Text(
-            'Email has been change successfully',
+            'Password has been change successfully',
             style: TextStyle(color: Colors.white),
           ),
           backgroundColor: Colors.green,
