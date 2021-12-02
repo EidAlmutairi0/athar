@@ -15,6 +15,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import '../VR-Screen.dart';
 import 'package:panorama/panorama.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:intl/intl.dart';
 
 class TourguidePlaceScreen extends StatefulWidget {
   var loc = Geolocator();
@@ -68,6 +69,7 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
 
   TabController _controller;
   Image VRimage;
+  DateTime expiryDate;
   String previewImageUrl =
       'https://maps.googleapis.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=13&size=600x300&maptype=roadmap&markers=color:red%7Clabel:C%7C40.718217,-73.998284&key=$GOOGLE_API_KEY';
 
@@ -76,12 +78,34 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
     _controller = new TabController(length: 2, vsync: this);
     _getLocation();
     getVRImages();
+    getEXDate();
     super.initState();
   }
 
   final storage = FirebaseStorage.instance;
   List<Panorama> VRimages = [];
   List temp = [];
+
+  getEXDate() {
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('tourGuides')
+        .collection('tourGuides')
+        .doc(Authentication.currntUsername)
+        .get()
+        .then((value) {
+      setState(() {
+        expiryDate = DateTime.parse(value.get('expiryDate'));
+      });
+    });
+    FirebaseFirestore.instance
+        .collection('users')
+        .doc('tourGuides')
+        .collection('tourGuides')
+        .doc(Authentication.currntUsername)
+        .get()
+        .then((value) {});
+  }
 
   Future getVRImages() async {
     await FirebaseFirestore.instance
@@ -572,18 +596,31 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                   final data = snapshot.data.docs;
                                   List<TourGuideCard> TourGuides = [];
                                   for (var tourGuide in data) {
-                                    TourGuides.add(
-                                      TourGuideCard(
-                                        tourGuide.get('userName'),
-                                      ),
-                                    );
+                                    DateTime expiryDate = DateTime.parse(
+                                        tourGuide.get('expiryDate'));
+                                    DateTime now = new DateTime.now();
+                                    if (expiryDate.isAfter(now)) {
+                                      TourGuides.add(
+                                          TourGuideCard(tourGuide.id));
+                                    }
                                   }
-
                                   return SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: TourGuides,
-                                    ),
+                                    child: (TourGuides.isNotEmpty)
+                                        ? Row(children: TourGuides)
+                                        : Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 50),
+                                            child: Center(
+                                              child: Text(
+                                                "There is no tour guides for this place",
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                   );
                                   return Center(
                                     child: Text('There is no places'),
@@ -698,7 +735,10 @@ class _TourguidePlaceScreenState extends State<TourguidePlaceScreen>
                                                   '${Authentication.currntUsername}')
                                               .set({
                                             'userName':
-                                                Authentication.currntUsername
+                                                Authentication.currntUsername,
+                                            "expiryDate":
+                                                DateFormat("yyyy-MM-dd")
+                                                    .format(expiryDate)
                                           });
                                           FirebaseFirestore.instance
                                               .collection('users')

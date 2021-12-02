@@ -567,18 +567,31 @@ class _UserPlaceScreenState extends State<UserPlaceScreen>
                                   final data = snapshot.data.docs;
                                   final List<TourGuideCard> TourGuides = [];
                                   for (var tourGuide in data) {
-                                    TourGuides.add(
-                                      TourGuideCard(
-                                        tourGuide.get('userName'),
-                                      ),
-                                    );
+                                    DateTime expiryDate = DateTime.parse(
+                                        tourGuide.get('expiryDate'));
+                                    DateTime now = new DateTime.now();
+                                    if (expiryDate.isAfter(now)) {
+                                      TourGuides.add(
+                                          TourGuideCard(tourGuide.id));
+                                    }
                                   }
-
                                   return SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: TourGuides,
-                                    ),
+                                    child: (TourGuides.isNotEmpty)
+                                        ? Row(children: TourGuides)
+                                        : Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: 50),
+                                            child: Center(
+                                              child: Text(
+                                                "There is no tour guides for this place",
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                   );
                                 },
                               ),

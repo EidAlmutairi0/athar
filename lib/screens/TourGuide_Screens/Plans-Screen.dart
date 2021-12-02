@@ -1,8 +1,10 @@
 import 'dart:convert';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_braintree/flutter_braintree.dart';
 import 'package:http/http.dart' as http;
+import 'package:athar/providers/auth.dart';
+import 'package:intl/intl.dart';
 
 class PlansScreen extends StatefulWidget {
   @override
@@ -10,6 +12,7 @@ class PlansScreen extends StatefulWidget {
 }
 
 class _PlansScreenState extends State<PlansScreen> {
+  int selectedIndex = 1;
   int selectedPlan = 1;
   int amount = 10;
   var url = 'https://us-central1-athar-654db.cloudfunctions.net/paypalPayment';
@@ -49,6 +52,7 @@ class _PlansScreenState extends State<PlansScreen> {
                     InkWell(
                       onTap: () {
                         setState(() {
+                          selectedIndex = 1;
                           selectedPlan = 1;
                           amount = 10;
                         });
@@ -57,7 +61,7 @@ class _PlansScreenState extends State<PlansScreen> {
                         padding: const EdgeInsets.all(10),
                         child: Container(
                           decoration: BoxDecoration(
-                            border: (selectedPlan == 1)
+                            border: (selectedIndex == 1)
                                 ? Border.all(
                                     width: 2,
                                     color: Color(0xFFF2945E),
@@ -100,7 +104,8 @@ class _PlansScreenState extends State<PlansScreen> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          selectedPlan = 2;
+                          selectedIndex = 2;
+                          selectedPlan = 3;
                           amount = 30;
                         });
                       },
@@ -108,7 +113,7 @@ class _PlansScreenState extends State<PlansScreen> {
                         padding: const EdgeInsets.all(10),
                         child: Container(
                           decoration: BoxDecoration(
-                            border: (selectedPlan == 2)
+                            border: (selectedIndex == 2)
                                 ? Border.all(
                                     width: 2,
                                     color: Color(0xFFF2945E),
@@ -151,7 +156,8 @@ class _PlansScreenState extends State<PlansScreen> {
                     InkWell(
                       onTap: () {
                         setState(() {
-                          selectedPlan = 3;
+                          selectedIndex = 3;
+                          selectedPlan = 12;
                           amount = 60;
                         });
                       },
@@ -159,7 +165,7 @@ class _PlansScreenState extends State<PlansScreen> {
                         padding: const EdgeInsets.all(10),
                         child: Container(
                           decoration: BoxDecoration(
-                            border: (selectedPlan == 3)
+                            border: (selectedIndex == 3)
                                 ? Border.all(
                                     width: 2,
                                     color: Color(0xFFF2945E),
@@ -227,7 +233,39 @@ class _PlansScreenState extends State<PlansScreen> {
 
                               final http.Response response = await http.post(
                                   Uri.tryParse(
-                                      '$url?payment_method_nonce=${result.paymentMethodNonce}&device_data=${result.deviceData}&amount=${amount.toString()}'));
+                                      '$url?payment_method_nonce=${result.paymentMethodNonce}&device_data=${result.deviceData}'));
+                              final payResult = jsonDecode(response.body);
+                              if (payResult['result'] == 'success') {
+                                var date = DateTime.now();
+                                if (selectedPlan != 12) {
+                                  var newDate = DateTime(date.year,
+                                      date.month + selectedPlan, date.day);
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('tourGuides')
+                                      .collection('tourGuides')
+                                      .doc(Authentication.currntUsername)
+                                      .update({
+                                    "expiryDate":
+                                        DateFormat("yyyy-MM-dd").format(newDate)
+                                  });
+                                } else {
+                                  var newDate = DateTime(
+                                      date.year + 1, date.month, date.day);
+                                  FirebaseFirestore.instance
+                                      .collection('users')
+                                      .doc('tourGuides')
+                                      .collection('tourGuides')
+                                      .doc(Authentication.currntUsername)
+                                      .update({
+                                    "expiryDate":
+                                        DateFormat("yyyy-MM-dd").format(newDate)
+                                  });
+                                }
+                                Navigator.pop(context);
+
+                                print('payment done');
+                              }
                             }
                           },
                           child: Container(
