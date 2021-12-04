@@ -64,11 +64,12 @@ class _TourGuidesScreenState extends State<TourGuidesScreen> {
                 final data = snapshot.data.docs;
                 List<TourGuideBigCard> TourGuides = [];
                 for (var tourGuide in data) {
-                  TourGuides.add(
-                    TourGuideBigCard(
-                      tourGuide.get('userName'),
-                    ),
-                  );
+                  DateTime expiryDate =
+                      DateTime.parse(tourGuide.get('expiryDate'));
+                  DateTime now = new DateTime.now();
+                  if (expiryDate.isAfter(now)) {
+                    TourGuides.add(TourGuideBigCard(tourGuide.id));
+                  }
                 }
 
                 return SingleChildScrollView(

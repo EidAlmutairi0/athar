@@ -415,7 +415,7 @@ class _TourGuideFollowerScreenState extends State<TourGuideFollowerScreen> {
                             .doc('tourGuides')
                             .collection('tourGuides')
                             .doc(widget.username)
-                            .collection('VisitedPlaces')
+                            .collection('SubscribedPlaces')
                             .get(),
                         builder: (context, snapshot) {
                           if (snapshot.hasError) {

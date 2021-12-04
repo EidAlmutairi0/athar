@@ -11,11 +11,43 @@ class PlansScreen extends StatefulWidget {
   _PlansScreenState createState() => _PlansScreenState();
 }
 
+List places = [];
+
 class _PlansScreenState extends State<PlansScreen> {
+  getSubscribedPlaces() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc('tourGuides')
+        .collection('tourGuides')
+        .doc(Authentication.currntUsername)
+        .collection('SubscribedPlaces')
+        .get()
+        .then((value) {
+      places = value.docs.map((doc) => doc.id).toList();
+    });
+  }
+
+  updateSubscribedPlaces(List places, String date) async {
+    for (var place in places) {
+      await FirebaseFirestore.instance
+          .collection('places')
+          .doc(place)
+          .collection('Tour Guides')
+          .doc(Authentication.currntUsername)
+          .update({'expiryDate': date});
+    }
+  }
+
   int selectedIndex = 1;
   int selectedPlan = 1;
   int amount = 10;
   var url = 'https://us-central1-athar-654db.cloudfunctions.net/paypalPayment';
+
+  @override
+  void initState() {
+    getSubscribedPlaces();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -240,6 +272,7 @@ class _PlansScreenState extends State<PlansScreen> {
                                 if (selectedPlan != 12) {
                                   var newDate = DateTime(date.year,
                                       date.month + selectedPlan, date.day);
+
                                   FirebaseFirestore.instance
                                       .collection('users')
                                       .doc('tourGuides')
@@ -249,6 +282,9 @@ class _PlansScreenState extends State<PlansScreen> {
                                     "expiryDate":
                                         DateFormat("yyyy-MM-dd").format(newDate)
                                   });
+                                  Navigator.pop(context);
+                                  updateSubscribedPlaces(places,
+                                      DateFormat("yyyy-MM-dd").format(newDate));
                                 } else {
                                   var newDate = DateTime(
                                       date.year + 1, date.month, date.day);
@@ -261,9 +297,10 @@ class _PlansScreenState extends State<PlansScreen> {
                                     "expiryDate":
                                         DateFormat("yyyy-MM-dd").format(newDate)
                                   });
+                                  Navigator.pop(context);
+                                  updateSubscribedPlaces(places,
+                                      DateFormat("yyyy-MM-dd").format(newDate));
                                 }
-                                Navigator.pop(context);
-
                                 print('payment done');
                               }
                             }
